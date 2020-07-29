@@ -33,6 +33,7 @@ the left or the right slot, and this program will automatically fetch your most 
     * Toggle Frameshift Drive
   * In 'Mode Switches':
     * UI Focus
+    * Enter FSS Mode
   * In 'Interface Mode':
     * UI Panel Up
     * UI Panel Down
@@ -43,6 +44,9 @@ the left or the right slot, and this program will automatically fetch your most 
     * Next Panel Tab
   * In 'Headlook Mode':
     * Reset Headlook
+  * In 'Full Spectrum System Scanner':
+    * Discovery Scan
+    * Leave FSS
 
 ## Optimal Game Settings:
 1. Game resolution:      1080p Borderless

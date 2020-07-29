@@ -1,5 +1,3 @@
-import threading
-
 import keyboard
 import kthread
 from PIL import Image
@@ -7,10 +5,10 @@ from pystray import Icon, MenuItem, Menu
 
 from dev_autopilot import autopilot, resource_path, get_bindings, clear_input, set_autoFSS
 
-STATE = 0
-icon = None
-thread = None
+tray_icon = None
+main_thread = None
 aFSS = False
+
 
 
 def setup(icon):
@@ -19,11 +17,10 @@ def setup(icon):
 
 def exit_action():
     stop_action()
-    icon.visible = False
-    icon.stop()
+    if tray_icon:
+        tray_icon.visible = False
+        tray_icon.stop()
 
-
-main_thread = None
 
 
 def start_action():
@@ -58,16 +55,15 @@ def getFSS():
 
 
 def tray():
-    global icon, thread
-    icon = None
-    thread = None
+    global tray_icon
+    tray_icon = None
 
     name = 'ED - Autopilot'
-    icon = Icon(name=name, title=name)
+    tray_icon = Icon(name=name, title=name)
     logo = Image.open(resource_path('src/logo.png'))
-    icon.icon = logo
+    tray_icon.icon = logo
 
-    icon.menu = Menu(
+    tray_icon.menu = Menu(
         MenuItem('Start', lambda: start_action()),
         MenuItem('Stop', lambda: stop_action()),
         MenuItem('Auto-FSS', toggleFSS(), checked=getFSS()),
@@ -77,7 +73,7 @@ def tray():
     keyboard.add_hotkey('page up', start_action)
     keyboard.add_hotkey('page down', stop_action)
 
-    icon.run(setup)
+    tray_icon.run(setup)
 
 
 if __name__ == '__main__':

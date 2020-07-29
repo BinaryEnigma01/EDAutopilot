@@ -8,11 +8,13 @@
 # 
 #   2 - [OpenCV on Wheels](https://pypi.org/project/opencv-python/)
 # 
-#   3 - [Autopilot for Elite Dangerous using OpenCV and thoughts on CV enabled bots in visual-to-keyboard loop](https://networkgeekstuff.com/projects/autopilot-for-elite-dangerous-using-opencv-and-thoughts-on-cv-enabled-bots-in-visual-to-keyboard-loop/)
+#   3 - [Autopilot for Elite Dangerous using OpenCV and thoughts on CV enabled bots in visual-to-keyboard loop]
+#   (https://networkgeekstuff.com/projects/autopilot-for-elite-dangerous-using-opencv-and-thoughts-on-cv-enabled-bots-in-visual-to-keyboard-loop/)
 #   
 #   4 - [Using PyInstaller to Easily Distribute Python Applications](https://realpython.com/pyinstaller-python/)
 #   
-#   5 - [Direct Input to a Game - Python Plays GTA V](https://pythonprogramming.net/direct-input-game-python-plays-gta-v/)
+#   5 - [Direct Input to a Game - Python Plays GTA V]
+#   (https://pythonprogramming.net/direct-input-game-python-plays-gta-v/)
 #   
 #   6 - [Cross-platform GUI automation for human beings](https://pyautogui.readthedocs.io/en/latest/index.html)
 
@@ -104,7 +106,7 @@ logging.info('SCREEN_HEIGHT=' + str(SCREEN_HEIGHT))
 def get_latest_log(path_logs=None):
     """Returns the full path of the latest (most recent) elite log file (journal) from specified path"""
     if not path_logs:
-        path_logs = environ['USERPROFILE'] + "\\Saved Games\\Frontier Developments\\Elite Dangerous"
+        path_logs = environ['USERPROFILE'] + "/Saved Games/Frontier Developments/Elite Dangerous"
     list_of_logs = [join(path_logs, f) for f in listdir(path_logs) if
                     isfile(join(path_logs, f)) and f.startswith('Journal.')]
     if not list_of_logs:
@@ -150,7 +152,7 @@ def ship():
 
                 elif log_event == 'SupercruiseExit' or log_event == 'DockingCancelled' or (
                         log_event == 'Music' and ship_status['status'] == 'in_undocking') or (
-                        log_event == 'Location' and log['Docked'] == False):
+                        log_event == 'Location' and log['Docked'] is False):
                     ship_status['status'] = 'in_space'
 
                 elif log_event == 'Undocked':
@@ -226,7 +228,7 @@ logging.debug('ship=' + str(ship()))
 # Get latest keybinds file
 def get_latest_keybinds(path_bindings=None):
     if not path_bindings:
-        path_bindings = environ['LOCALAPPDATA'] + "\\Frontier Developments\\Elite Dangerous\\Options\\Bindings"
+        path_bindings = environ['LOCALAPPDATA'] + "/Frontier Developments/Elite Dangerous/Options/Bindings"
     list_of_bindings = [join(path_bindings, f) for f in listdir(path_bindings) if
                         (isfile(join(path_bindings, f)) and join(path_bindings, f).endswith("binds"))]
     if not list_of_bindings:
@@ -271,14 +273,6 @@ def get_bindings(keysToObtain=None):
     if keysToObtain is None:
         keysToObtain = keys_to_obtain
     direct_input_keys = {}
-    convert_to_direct_keys = {
-        'Key_LeftShift': 'LShift',
-        'Key_RightShift': 'RShift',
-        'Key_LeftAlt': 'LAlt',
-        'Key_RightAlt': 'RAlt',
-        'Key_LeftControl': 'LControl',
-        'Key_RightControl': 'RControl'
-    }
 
     latest_bindings = get_latest_keybinds()
     bindings_tree = parse(latest_bindings)
@@ -391,7 +385,7 @@ def get_screen(x_left, y_top, x_right, y_bot):
 
 # HSV slider tool
 def callback(x):
-    pass
+    return x
 
 
 def hsv_slider(bandw=False):
@@ -610,7 +604,7 @@ def get_compass_image(testing=True):
     if max_val >= threshold:
         pt = max_loc
     compass_image = screen[pt[1] - doubt: pt[1] + compass_height + doubt,
-                    pt[0] - doubt: pt[0] + compass_width + doubt].copy()
+                           pt[0] - doubt: pt[0] + compass_width + doubt].copy()
     if testing:
         cv2.rectangle(screen, (pt[0] - doubt, pt[1] - doubt),
                       (pt[0] + (compass_width + doubt), pt[1] + (compass_height + doubt)), (0, 0, 255), 2)
@@ -986,8 +980,8 @@ def get_aFSS():
 
 def scanFSS():
     align()
-    send(keys['SetSpeed100'])   # The farther away we are, the easier the system is to scan
-    sleep(15)                   # And there's far less chance of obstructed frequencies
+    send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
+    sleep(15)  # And there's far less chance of obstructed frequencies
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
     sleep(1)
@@ -1048,7 +1042,6 @@ def autopilot():
 
             logging.info('---- AUTOPILOT JUMP ' + 180 * '-')
             jump()
-
 
             logging.info('---- AUTOPILOT REFUEL ' + 178 * '-')
             refueled = refuel()
