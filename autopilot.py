@@ -17,7 +17,8 @@ def update():
     try:
         latest_release = data[0]['tag_name']
         if latest_release and latest_release != RELEASE:
-            message = "There is a new version of EDAutopilot available!\nWould you like to go to the release download page?"
+            message = "There is a new version of EDAutopilot available!\n" \
+                      "Would you like to go to the release download page?"
             root = tk.Tk()
             root.withdraw()
             root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=resource_path('src/logo.png')))

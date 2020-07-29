@@ -5,11 +5,13 @@ import kthread
 from PIL import Image
 from pystray import Icon, MenuItem, Menu
 
-from dev_autopilot import autopilot, resource_path, get_bindings, clear_input, set_scanner
+from dev_autopilot import autopilot, resource_path, get_bindings, clear_input, set_autoFSS
 
 STATE = 0
 icon = None
 thread = None
+aFSS = False
+
 
 def setup(icon):
     icon.visible = True
@@ -21,30 +23,36 @@ def exit_action():
     icon.stop()
 
 
+main_thread = None
+
+
 def start_action():
+    global main_thread
     stop_action()
-    kthread.KThread(target=autopilot, name="EDAutopilot").start()
+    main_thread = kthread.KThread(target=autopilot, name="EDAutopilot")
+    main_thread.start()
 
 
 def stop_action():
-    for thread in threading.enumerate():
-        if thread.getName() == 'EDAutopilot':
-            thread.kill()
+    global main_thread
+    if main_thread:
+        main_thread.kill()
+        main_thread = None
     clear_input(get_bindings())
 
 
-def set_state(v):
+def toggleFSS():
     def inner(icon, item):
-        global STATE
-        STATE = v
-        set_scanner(STATE)
+        global aFSS
+        aFSS = ~aFSS
+        set_autoFSS(aFSS)
 
     return inner
 
 
-def get_state(v):
+def getFSS():
     def inner(item):
-        return STATE == v
+        return aFSS
 
     return inner
 
@@ -60,24 +68,9 @@ def tray():
     icon.icon = logo
 
     icon.menu = Menu(
-        MenuItem(
-            'Scan Off',
-            set_state(0),
-            checked=get_state(0),
-            radio=True
-        ),
-        MenuItem(
-            'Scan on Primary Fire',
-            set_state(1),
-            checked=get_state(1),
-            radio=True
-        ),
-        MenuItem(
-            'Scan on Secondary Fire',
-            set_state(2),
-            checked=get_state(2),
-            radio=True
-        ),
+        MenuItem('Start', lambda: start_action()),
+        MenuItem('Stop', lambda: stop_action()),
+        MenuItem('Auto-FSS', toggleFSS(), checked=getFSS()),
         MenuItem('Exit', lambda: exit_action())
     )
 
