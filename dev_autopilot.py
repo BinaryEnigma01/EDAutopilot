@@ -133,6 +133,7 @@ def ship():
         'fuel_level': None,
         'fuel_percent': None,
         'is_scooping': False,
+        'sys_fully_scanned': False
     }
     # Read log line by line and parse data
     with open(latest_log, encoding="utf-8") as f:
@@ -169,6 +170,8 @@ def ship():
 
                 elif log_event == 'Docked':
                     ship_status['status'] = 'in_station'
+                elif log_event == 'FSSAllBodiesFound':
+                    ship_status['sys_fully_scanned'] = True
 
                 # parse ship type
                 if log_event == 'LoadGame' or log_event == 'Loadout':
@@ -209,6 +212,7 @@ def ship():
                     else:
                         ship_status['target'] = log['Name']
                 elif log_event == 'FSDJump':
+                    ship_status['sys_fully_scanned'] = False
                     if ship_status['location'] == ship_status['target']:
                         ship_status['target'] = None
 
@@ -315,7 +319,7 @@ keys = get_bindings()
 for key in keys_to_obtain:
     try:
         logging.info('get_bindings: ' + str(key) + ' = ' + str(keys[key]))
-    except Exception as e:
+    except KeyError as e:
         logging.warning(str("get_bindings: " + key + " = does not have a valid keyboard keybind.").upper())
 
 
@@ -986,7 +990,9 @@ def scanFSS():
     send(keys['ExplorationFSSEnter'])
     sleep(1)
     send(keys['ExplorationFSSDiscoveryScan'], 3)
-    sleep(4)  # TODO: Actually scan around and such
+    while not ship()['sys_fully_scanned']:
+        sleep(5)  # TODO: Actually scan around and such
+
     send(keys['ExplorationFSSQuit'])
 
 
