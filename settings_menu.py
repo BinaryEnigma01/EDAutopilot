@@ -25,6 +25,16 @@ def saved():
     unsaved = False
 
 
+def getKeyForBtn(btn):
+    global unsaved
+    key = keyboard.read_key()
+    if key is not "esc":
+        btn['text'] = key
+        modified()
+        from dev_autopilot import logger
+        logger.debug("(settings_menu) detected key '{}' with scancode {}".format(key, keyboard.key_to_scan_codes(key)))
+
+
 def create_window():
     window = Tk()
     window.title("EDAutopilot Settings")
@@ -70,11 +80,7 @@ def create_window():
     startKeyLbl.place(relx=0.02, rely=0.23)
 
     def on_startKey():
-        global unsaved
-        key = keyboard.read_key()
-        if key is not "esc":
-            startKeyBtn['text'] = key
-            modified()
+        getKeyForBtn(startKeyBtn)
 
     startKeyBtn = Button(window, text=getOption('StartKey'), command=on_startKey, width=20)
     startKeyBtn.place(relx=0.46, rely=0.22)
@@ -83,10 +89,7 @@ def create_window():
     startKeyLbl.place(relx=0.02, rely=0.33)
 
     def on_endKey():
-        key = keyboard.read_key()
-        if key is not "esc":
-            endKeyBtn['text'] = key
-            modified()
+        getKeyForBtn(endKeyBtn)
 
     endKeyBtn = Button(window, text=getOption('EndKey'), command=on_endKey, width=20)
     endKeyBtn.place(relx=0.46, rely=0.32)

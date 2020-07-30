@@ -67,6 +67,7 @@ EDKeyCodes = {
     'Key_RightControl': 0x9D+1024,  # KEY_RIGHT_CTRL
     'Key_RightShift': 0x36,  # KEY_RIGHT_SHIFT
     'Key_Apostrophe': 0x28,  # KEY_APOSTROPHE
+    'Key_Hash': 0x2B,  # /shrug
     'Key_BackSlash': 0x2B,  # KEY_BACKSLASH
     'Key_Comma': 0x33,  # KEY_COMMA
     'Key_Enter': 0x1C,  # KEY_ENTER

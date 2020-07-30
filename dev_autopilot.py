@@ -975,11 +975,13 @@ def scanFSS(aFFS):
     if aFFS:
         send(keys['SetSpeed100'])   # The farther away we are, the easier the system is to scan
         sleep(15)                   # and there's far less chance of obstructed frequencies
+    logging.info("Discovery scanning")
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
     sleep(1)
     send(keys['ExplorationFSSDiscoveryScan'], 3)
     if aFFS:
+        logging.info("Waiting for FSS to complete")
         while not ship()['sys_fully_scanned']:
             sleep(5)  # TODO: Actually scan around and such
 
