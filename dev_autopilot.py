@@ -37,6 +37,7 @@ import numpy as np
 from PIL import ImageGrab
 from pyautogui import size  # see reference 6
 
+from settings_api import getOption
 from src.directinput import EDKeyCodes, PressKey, ReleaseKey  # see reference 5
 
 
@@ -967,31 +968,20 @@ def refuel(refuel_threshold=90):
         return False
 
 
-# Auto FSS
-autoFSS = False
 
+def scanFSS(aFFS):
 
-def set_autoFSS(b):
-    global autoFSS
-    autoFSS = b
-    logging.debug('autoFSS={}'.format(bool(autoFSS)))
-
-
-def get_aFSS():
-    from dev_tray import aFSS
-    return aFSS
-
-
-def scanFSS():
     align()
-    send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
-    sleep(15)  # And there's far less chance of obstructed frequencies
+    if aFFS:
+        send(keys['SetSpeed100'])   # The farther away we are, the easier the system is to scan
+        sleep(15)                   # and there's far less chance of obstructed frequencies
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
     sleep(1)
     send(keys['ExplorationFSSDiscoveryScan'], 3)
-    while not ship()['sys_fully_scanned']:
-        sleep(5)  # TODO: Actually scan around and such
+    if aFFS:
+        while not ship()['sys_fully_scanned']:
+            sleep(5)  # TODO: Actually scan around and such
 
     send(keys['ExplorationFSSQuit'])
 
@@ -1042,9 +1032,9 @@ def autopilot():
             logging.info('---- AUTOPILOT ALIGN ' + 179 * '-')
             align()
 
-            if autoFSS:
+            if getOption('DiscoveryScan'):
                 logging.info('---- AUTOPILOT SCAN ' + 180 * '-')
-                scanFSS()
+                scanFSS(getOption('AutoFSS'))
 
             logging.info('---- AUTOPILOT JUMP ' + 180 * '-')
             jump()

@@ -3,12 +3,14 @@ import kthread
 from PIL import Image
 from pystray import Icon, MenuItem, Menu
 
-from dev_autopilot import autopilot, resource_path, get_bindings, clear_input, set_autoFSS
+from dev_autopilot import autopilot, resource_path, get_bindings, clear_input
+from settings_api import getOption, setOption
+from settings_menu import open_settings
 
 tray_icon = None
 main_thread = None
-aFSS = False
-
+startKey = None
+endKey = None
 
 
 def setup(icon):
@@ -40,18 +42,30 @@ def stop_action():
 
 def toggleFSS():
     def inner(icon, item):
-        global aFSS
-        aFSS = ~aFSS
-        set_autoFSS(aFSS)
+        setOption('AutoFSS', not getOption('AutoFSS'))
 
     return inner
 
 
 def getFSS():
     def inner(item):
-        return aFSS
+        return getOption('AutoFSS')
 
     return inner
+
+
+def updateSettings(key):
+    if key == 'StartKey':
+        global startKey
+        keyboard.remove_hotkey(startKey)
+        startKey = keyboard.add_hotkey(getOption('StartKey'), start_action)
+    elif key == 'EndKey':
+        global endKey
+        keyboard.remove_hotkey(endKey)
+        endKey = keyboard.add_hotkey(getOption('EndKey'), stop_action)
+    elif (tray_icon is not None) and (key == 'AutoFSS'):
+        tray_icon.update_menu()
+
 
 
 def tray():
@@ -67,11 +81,13 @@ def tray():
         MenuItem('Start', lambda: start_action()),
         MenuItem('Stop', lambda: stop_action()),
         MenuItem('Auto-FSS', toggleFSS(), checked=getFSS()),
+        MenuItem('Settings', lambda: open_settings()),
         MenuItem('Exit', lambda: exit_action())
     )
 
-    keyboard.add_hotkey('page up', start_action)
-    keyboard.add_hotkey('page down', stop_action)
+    global startKey, endKey
+    startKey = keyboard.add_hotkey(getOption('StartKey'), start_action)
+    endKey = keyboard.add_hotkey(getOption('EndKey'), stop_action)
 
     tray_icon.run(setup)
 
