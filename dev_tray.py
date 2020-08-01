@@ -5,7 +5,7 @@ from pystray import Icon, MenuItem, Menu
 
 from dev_autopilot import autopilot, resource_path, get_bindings, clear_input
 from settings_api import getOption, setOption
-from settings_menu import open_settings
+from settings_menu import open_settings, force_close_settings
 
 tray_icon = None
 main_thread = None
@@ -19,6 +19,7 @@ def setup(icon):
 
 def exit_action():
     stop_action()
+    force_close_settings()
     if tray_icon:
         tray_icon.visible = False
         tray_icon.stop()

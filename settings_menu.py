@@ -1,4 +1,4 @@
-from tkinter import Tk, Checkbutton, BooleanVar, Button, NORMAL, DISABLED, Label
+from tkinter import Tk, Checkbutton, BooleanVar, Button, NORMAL, DISABLED, Label, Entry
 from tkinter.messagebox import askyesnocancel, YES
 
 import keyboard
@@ -94,14 +94,40 @@ def create_window():
     endKeyBtn = Button(window, text=getOption('EndKey'), command=on_endKey, width=20)
     endKeyBtn.place(relx=0.46, rely=0.32)
 
+    rtLbl = Label(window, text='Refuel threshold percentage:')
+    rtLbl.place(relx=0.02, rely=0.43)
+
+
+    def callback(strnum):
+        return ((str.isdigit(strnum)) and (len(strnum) <= 3) and (0 <= int(strnum) <= 100)) or strnum == ""
+
+
+    vcmd = (window.register(callback))
+
+    refuelThreshold = Entry(window, validate='all', validatecommand=(vcmd, '%P'), width=10, justify='center')
+    refuelThreshold.insert(0, getOption('RefuelThreshold'))
+    refuelThreshold.place(relx=0.62, rely=0.44)
+
+
+    def get_refuel_threshold(entry):
+        if not entry:
+            return int(getOption('RefuelThreshold'))
+        return int(entry.get())
+
+
     def on_save():
         # setOption('AutoFSS', fssState.get())
         # setOption('DiscoveryScan', dsState.get())
         # setOption('StartKey', startKeyBtn['text'])
         # setOption('EndKey', endKeyBtn['text'])
         # This operation isn't very safe, but it's better than the above:
-        __writeSettings(dict(AutoFSS=fssState.get(), DiscoveryScan=dsState.get(),
-                             StartKey=startKeyBtn['text'], EndKey=endKeyBtn['text']))
+        __writeSettings(dict(
+                            AutoFSS=fssState.get(),
+                            DiscoveryScan=dsState.get(),
+                            StartKey=startKeyBtn['text'],
+                            EndKey=endKeyBtn['text'],
+                            RefuelThreshold=get_refuel_threshold(refuelThreshold)
+        ))
         saved()
 
     saveBtn = Button(window, text="Save Settings", command=on_save)
@@ -109,8 +135,19 @@ def create_window():
     return window
 
 
+curr_window = None
+
+
 def open_settings():
+    global curr_window
     saved()
-    window = create_window()
-    window.focus_force()
-    window.mainloop()
+    curr_window = create_window()
+    curr_window.focus_force()
+    curr_window.mainloop()
+
+
+def force_close_settings():
+    global curr_window
+    if curr_window is not None:
+        curr_window.destroy()
+        curr_window = None

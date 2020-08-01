@@ -46,7 +46,8 @@ def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-    except Exception:
+    except Exception as trace:
+        logging.exception(trace)
         base_path = abspath(".")
 
     return join(base_path, relative_path)
@@ -148,6 +149,9 @@ def ship():
 
                 if log_event == 'StartJump':
                     ship_status['status'] = str('starting_' + log['JumpType']).lower()
+                    ship_status['sys_fully_scanned'] = False
+                    if 'StarClass' in log:
+                        ship_status['star_class'] = log['StarClass']
 
                 elif log_event == 'SupercruiseEntry' or log_event == 'FSDJump':
                     ship_status['status'] = 'in_supercruise'
@@ -171,6 +175,7 @@ def ship():
 
                 elif log_event == 'Docked':
                     ship_status['status'] = 'in_station'
+
                 elif log_event == 'FSSAllBodiesFound':
                     ship_status['sys_fully_scanned'] = True
 
@@ -182,10 +187,11 @@ def ship():
                 if 'FuelLevel' in log and ship_status['type'] != 'TestBuggy':
                     ship_status['fuel_level'] = log['FuelLevel']
                 if 'FuelCapacity' in log and ship_status['type'] != 'TestBuggy':
-                    try:
-                        ship_status['fuel_capacity'] = log['FuelCapacity']['Main']
-                    except:
+                    if type(log['FuelCapacity']) == float:
                         ship_status['fuel_capacity'] = log['FuelCapacity']
+                    else:
+                        ship_status['fuel_capacity'] = log['FuelCapacity']['Main']
+
                 if log_event == 'FuelScoop' and 'Total' in log:
                     ship_status['fuel_level'] = log['Total']
                 if ship_status['fuel_level'] and ship_status['fuel_capacity']:
@@ -203,8 +209,6 @@ def ship():
                 # parse location
                 if (log_event == 'Location' or log_event == 'FSDJump') and 'StarSystem' in log:
                     ship_status['location'] = log['StarSystem']
-                if 'StarClass' in log:
-                    ship_status['star_class'] = log['StarClass']
 
                 # parse target
                 if log_event == 'FSDTarget':
@@ -213,7 +217,6 @@ def ship():
                     else:
                         ship_status['target'] = log['Name']
                 elif log_event == 'FSDJump':
-                    ship_status['sys_fully_scanned'] = False
                     if ship_status['location'] == ship_status['target']:
                         ship_status['target'] = None
 
@@ -940,7 +943,7 @@ def jump():
 
 
 # Refuel
-def refuel(refuel_threshold=90):
+def refuel(refuel_threshold=getOption('RefuelThreshold')):
     logging.debug('refuel')
     scoopable_stars = ['F', 'O', 'G', 'K', 'B', 'A', 'M']
     if ship()['status'] != 'in_supercruise':
@@ -986,6 +989,7 @@ def scanFSS(aFFS):
             sleep(5)  # TODO: Actually scan around and such
 
     send(keys['ExplorationFSSQuit'])
+    logging.info("Scan complete")
 
 
 # Position
