@@ -3,7 +3,7 @@ from tkinter.messagebox import askyesnocancel, YES
 
 import keyboard
 
-from settings_api import __writeSettings, getOption
+from settings_api import getOptions, setOption
 
 
 #
@@ -12,25 +12,10 @@ from settings_api import __writeSettings, getOption
 #
 
 
-unsaved = False
-
-
-def modified():
-    global unsaved
-    unsaved = True
-
-
-def saved():
-    global unsaved
-    unsaved = False
-
-
 def getKeyForBtn(btn):
-    global unsaved
     key = keyboard.read_key()
     if key is not "esc":
         btn['text'] = key
-        modified()
         from dev_autopilot import logger
         logger.debug("(settings_menu) detected key '{}' with scancode {}".format(key, keyboard.key_to_scan_codes(key)))
 
@@ -42,8 +27,10 @@ def create_window():
     window.resizable(False, False)
     window.iconbitmap('src/logo.ico')
 
+    defaults = getOptions()
+
     def on_closing():
-        if unsaved:
+        if unsaved():
             confirm = askyesnocancel(
                 title="Save On Close",
                 message="Do you want to save before closing?",
@@ -59,21 +46,20 @@ def create_window():
     window.protocol("WM_DELETE_WINDOW", on_closing)
 
     def toggleFSS():
-        modified()
         if dsState.get():
             fssCheck['state'] = NORMAL
         else:
             fssCheck['state'] = DISABLED
 
     dsState = BooleanVar()
-    dsState.set(getOption('DiscoveryScan'))
+    dsState.set(defaults['DiscoveryScan'])
     dsCheck = Checkbutton(window, text='Automatic Discovery Scan', var=dsState, command=toggleFSS)
     dsCheck.place(relx=0.02, rely=0.02)
 
     fssState = BooleanVar()
-    fssState.set(getOption('AutoFSS'))
+    fssState.set(defaults['AutoFSS'])
     fssCheck = Checkbutton(window, text='Automatic FSS Scan\n (Currently waits for user to operate FSS)',
-                           var=fssState, command=modified)
+                           var=fssState)
     fssCheck.place(relx=0.05, rely=0.09)
 
     startKeyLbl = Label(window, text='Start EDAutopilot Key:')
@@ -82,7 +68,7 @@ def create_window():
     def on_startKey():
         getKeyForBtn(startKeyBtn)
 
-    startKeyBtn = Button(window, text=getOption('StartKey'), command=on_startKey, width=20)
+    startKeyBtn = Button(window, text=defaults['StartKey'], command=on_startKey, width=20)
     startKeyBtn.place(relx=0.46, rely=0.22)
 
     startKeyLbl = Label(window, text='End EDAutopilot Key:')
@@ -91,7 +77,7 @@ def create_window():
     def on_endKey():
         getKeyForBtn(endKeyBtn)
 
-    endKeyBtn = Button(window, text=getOption('EndKey'), command=on_endKey, width=20)
+    endKeyBtn = Button(window, text=defaults['EndKey'], command=on_endKey, width=20)
     endKeyBtn.place(relx=0.46, rely=0.32)
 
     rtLbl = Label(window, text='Refuel threshold percentage:')
@@ -105,30 +91,35 @@ def create_window():
     vcmd = (window.register(callback))
 
     refuelThreshold = Entry(window, validate='all', validatecommand=(vcmd, '%P'), width=10, justify='center')
-    refuelThreshold.insert(0, getOption('RefuelThreshold'))
+    refuelThreshold.insert(0, defaults['RefuelThreshold'])
     refuelThreshold.place(relx=0.62, rely=0.44)
 
 
     def get_refuel_threshold(entry):
         if not entry:
-            return int(getOption('RefuelThreshold'))
-        return int(entry.get())
+            return defaults['RefuelThreshold']
+        return str(int(entry.get()))  # Just to be triply sure it's an int in str form
+
+
+    def unsaved():
+        return str(fssState.get()) != defaults['AutoFSS'] or str(dsState.get()) != defaults['DiscoveryScan'] or \
+               startKeyBtn['text'] != defaults['StartKey'] or endKeyBtn['text'] != defaults['EndKey'] or \
+               get_refuel_threshold(refuelThreshold) != defaults['RefuelThreshold']
 
 
     def on_save():
-        # setOption('AutoFSS', fssState.get())
-        # setOption('DiscoveryScan', dsState.get())
-        # setOption('StartKey', startKeyBtn['text'])
-        # setOption('EndKey', endKeyBtn['text'])
-        # This operation isn't very safe, but it's better than the above:
-        __writeSettings(dict(
-                            AutoFSS=fssState.get(),
-                            DiscoveryScan=dsState.get(),
-                            StartKey=startKeyBtn['text'],
-                            EndKey=endKeyBtn['text'],
-                            RefuelThreshold=get_refuel_threshold(refuelThreshold)
-        ))
-        saved()
+        if not unsaved():
+            return
+        if str(fssState.get()) != defaults['AutoFSS']:
+            setOption('AutoFSS', fssState.get())
+        if str(dsState.get()) != defaults['DiscoveryScan']:
+            setOption('DiscoveryScan', dsState.get())
+        if startKeyBtn['text'] != defaults['StartKey']:
+            setOption('StartKey', startKeyBtn['text'])
+        if endKeyBtn['text'] != defaults['EndKey']:
+            setOption('EndKey', endKeyBtn['text'])
+        if get_refuel_threshold(refuelThreshold) != defaults['RefuelThreshold']:
+            setOption('RefuelThreshold', get_refuel_threshold(refuelThreshold))
 
     saveBtn = Button(window, text="Save Settings", command=on_save)
     saveBtn.place(relx=0.70, rely=0.90)
@@ -140,7 +131,6 @@ curr_window = None
 
 def open_settings():
     global curr_window
-    saved()
     curr_window = create_window()
     curr_window.focus_force()
     curr_window.mainloop()

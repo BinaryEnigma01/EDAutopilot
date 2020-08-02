@@ -943,7 +943,7 @@ def jump():
 
 
 # Refuel
-def refuel(refuel_threshold=getOption('RefuelThreshold')):
+def refuel(refuel_threshold=int(getOption('RefuelThreshold'))):
     logging.debug('refuel')
     scoopable_stars = ['F', 'O', 'G', 'K', 'B', 'A', 'M']
     if ship()['status'] != 'in_supercruise':
@@ -982,7 +982,7 @@ def scanFSS(aFFS):
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
     sleep(1)
-    send(keys['ExplorationFSSDiscoveryScan'], 3)
+    send(keys['ExplorationFSSDiscoveryScan'], 3.5)
     if aFFS:
         logging.info("Waiting for FSS to complete")
         while not ship()['sys_fully_scanned']:
@@ -1054,3 +1054,5 @@ def autopilot():
 
     send(keys['SetSpeedZero'])
     logging.info('---- AUTOPILOT END ' + 181 * '-')
+    from dev_tray import stop_action
+    stop_action(True)

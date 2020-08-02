@@ -11,7 +11,7 @@ settings = dict(AutoFSS=False, DiscoveryScan=True, StartKey='home', EndKey='end'
 CFGFILE = "./EDAutopilot.cfg"
 
 
-def __readSettings():
+def _readSettings():
     if os.path.isfile(CFGFILE):
         f = open(CFGFILE, "r")
         for line in f:
@@ -19,10 +19,10 @@ def __readSettings():
             settings[key] = value[0:-1]
         f.close()
     else:
-        __writeSettings()
+        _writeSettings()
 
 
-def __writeSettings(dictionary=None):
+def _writeSettings(dictionary=None):
     if dictionary is None:
         dictionary = settings
     f = open(CFGFILE, "w")
@@ -30,37 +30,41 @@ def __writeSettings(dictionary=None):
         f.write('{}={}\n'.format(key, dictionary[key]))
     f.close()
     if dictionary is not settings:
-        on_change_all()
+        _on_change_all()
 
 
-def on_change(key, val=None):
+def _on_change(key, val=None):
     from dev_autopilot import logger
     from dev_tray import updateSettings
-    valstr = ""
+    valStr = ""
     if val is not None:
-        valstr = "to {}".format(val)
+        valStr = "to {}".format(val)
 
-    logger.info("Key {} changed value {}".format(key, valstr))  # Maybe
+    logger.info("Setting {} changed value {}".format(key, valStr))
     updateSettings(key)
 
 
-def on_change_all():  # All or most keys changed value
-    __readSettings()
+def _on_change_all():  # All or most keys changed value
+    _readSettings()
     for key in settings:
-        on_change(key)
+        _on_change(key)
 
 
 def setOption(key, value):  # Not very efficient, but pretty safe
-    __readSettings()
+    _readSettings()
     settings[key] = value
-    __writeSettings()
-    on_change(key, value)
+    _writeSettings()
+    _on_change(key, value)
 
 
 def getOption(key):
-    __readSettings()
+    _readSettings()
     val = settings[key]
     if val == "False":
         return False
     return settings[key]
 
+
+def getOptions():
+    _readSettings()
+    return settings
