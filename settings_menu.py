@@ -11,6 +11,8 @@ from settings_api import getOptions, setOption
 # Makes use of the settings file interface
 #
 
+curr_window = None
+
 
 def getKeyForBtn(btn):
     key = keyboard.read_key()
@@ -41,6 +43,8 @@ def create_window():
                 on_save()
             elif confirm is None:
                 return False
+        global curr_window
+        curr_window = None
         window.destroy()
 
     window.protocol("WM_DELETE_WINDOW", on_closing)
@@ -124,9 +128,6 @@ def create_window():
     saveBtn = Button(window, text="Save Settings", command=on_save)
     saveBtn.place(relx=0.70, rely=0.90)
     return window
-
-
-curr_window = None
 
 
 def open_settings():

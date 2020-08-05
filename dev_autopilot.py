@@ -46,8 +46,7 @@ def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-    except Exception as trace:
-        logging.exception(trace)
+    except AttributeError:
         base_path = abspath(".")
 
     return join(base_path, relative_path)
@@ -568,7 +567,7 @@ def filter_blue(image=None, testing=False):
         else:
             hsv = image.copy()
         # converting from BGR to HSV color space
-        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
+        hsv = cv2. cvtColor(hsv, cv2.COLOR_BGR2HSV)
         # filter Elite UI orange
         filtered = cv2.inRange(hsv, np.array([0, 0, 200]), np.array([180, 100, 255]))
         if testing:
@@ -914,11 +913,19 @@ def align():
 # Jump
 def jump():
     logging.info('Starting Jump')
-    tries = 3
+    tries = 5
     for i in range(tries):
+        if ship()['status'] == 'starting_hyperspace':
+            logging.info('Jump in Progress')
+            while ship()['status'] != 'in_supercruise':
+                sleep(1)
+            logging.debug('jump=speed 0')
+            send(keys['SetSpeedZero'])
+            logging.info('Jump Complete')
+            return True
         logging.debug('jump=try:' + str(i))
         if not (ship()['status'] == 'in_supercruise' or ship()['status'] == 'in_space'):
-            logging.error('jump=err1')
+            logging.error('jump_err=status:' + ship()['status'])
             raise Exception('not ready to jump')
         sleep(0.5)
         send(keys['SetSpeed100'])
@@ -927,17 +934,8 @@ def jump():
         sleep(16)
         if ship()['status'] != 'starting_hyperspace':
             logging.info('Trajectory Misaligned. Jump Failed. Retrying Alignment')
-            send(keys['HyperSuperCombination'], hold=1)
-            sleep(2)
             align()
-        else:
-            logging.info('Jump in Progress')
-            while ship()['status'] != 'in_supercruise':
-                sleep(1)
-            logging.debug('jump=speed 0')
-            send(keys['SetSpeedZero'])
-            logging.info('Jump Complete')
-            return True
+
     logging.error('jump=err2')
     raise Exception("jump failure")
 
@@ -1055,4 +1053,4 @@ def autopilot():
     send(keys['SetSpeedZero'])
     logging.info('---- AUTOPILOT END ' + 181 * '-')
     from dev_tray import stop_action
-    stop_action(True)
+    stop_action()

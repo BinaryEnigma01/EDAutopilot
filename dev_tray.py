@@ -33,12 +33,10 @@ def start_action():
     main_thread.start()
 
 
-def stop_action(end=False):
+def stop_action():
     global main_thread
-    if main_thread:
-        if not end:
-            main_thread.kill()
-        main_thread = None
+    if main_thread and main_thread.is_alive():
+        main_thread.kill()
     clear_input(get_bindings())
 
 
