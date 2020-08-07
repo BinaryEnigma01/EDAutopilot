@@ -1,3 +1,4 @@
+import os
 from tkinter import Tk, Checkbutton, BooleanVar, Button, NORMAL, DISABLED, Label, Entry
 from tkinter.messagebox import askyesnocancel, YES
 
@@ -9,6 +10,7 @@ from settings_api import getOptions, setOption
 #
 # Simple settings menu
 # Makes use of the settings file interface
+# Prone to visual errors due to hardcoded widget locations
 #
 
 curr_window = None
@@ -16,7 +18,7 @@ curr_window = None
 
 def getKeyForBtn(btn):
     key = keyboard.read_key()
-    if key is not "esc":
+    if key != "esc":
         btn['text'] = key
         from dev_autopilot import logger
         logger.debug("(settings_menu) detected key '{}' with scancode {}".format(key, keyboard.key_to_scan_codes(key)))
@@ -27,7 +29,10 @@ def create_window():
     window.title("EDAutopilot Settings")
     window.geometry('280x300')
     window.resizable(False, False)
-    window.iconbitmap('src/logo.ico')
+    from dev_autopilot import logger
+    logger.debug(os.name)
+    if "nt" == os.name:
+        window.iconbitmap('src/logo.ico')
 
     defaults = getOptions()
 

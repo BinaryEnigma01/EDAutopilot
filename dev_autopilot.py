@@ -34,10 +34,11 @@ from xml.etree.ElementTree import parse
 import colorlog
 import cv2  # see reference 2
 import numpy as np
-from PIL import ImageGrab
+# from PIL import ImageGrab
+import pyscreenshot as ImageGrab
 from pyautogui import size  # see reference 6
 
-from settings_api import getOption
+from settings_api import getOption, setOption
 from src.directinput import EDKeyCodes, PressKey, ReleaseKey  # see reference 5
 
 
@@ -106,8 +107,14 @@ logging.info('SCREEN_HEIGHT=' + str(SCREEN_HEIGHT))
 # Get latest log file
 def get_latest_log(path_logs=None):
     """Returns the full path of the latest (most recent) elite log file (journal) from specified path"""
+    path_logs = getOption('JournalPath')
     if not path_logs:
-        path_logs = environ['USERPROFILE'] + "/Saved Games/Frontier Developments/Elite Dangerous"
+        user_path = environ.get('USERPROFILE')
+        if user_path:
+            path_logs = user_path + "/Saved Games/Frontier Developments/Elite Dangerous"
+            setOption('JournalPath', path_logs)
+        else:
+            raise FileNotFoundError("Journal path not found, define it in configs")
     list_of_logs = [join(path_logs, f) for f in listdir(path_logs) if
                     isfile(join(path_logs, f)) and f.startswith('Journal.')]
     if not list_of_logs:
@@ -221,8 +228,7 @@ def ship():
 
             # exceptions
             except Exception as trace:
-                logging.exception("Exception occurred")
-                print(trace)
+                logging.exception("Exception occurred: {}".format(trace))
     #     logging.debug('ship='+str(ship))
     return ship_status
 
@@ -234,8 +240,14 @@ logging.debug('ship=' + str(ship()))
 
 # Get latest keybinds file
 def get_latest_keybinds(path_bindings=None):
+    path_bindings = getOption('BindingsPath')
     if not path_bindings:
-        path_bindings = environ['LOCALAPPDATA'] + "/Frontier Developments/Elite Dangerous/Options/Bindings"
+        appdata = environ.get('LOCALAPPDATA')
+        if appdata:
+            path_bindings = appdata + "/Frontier Developments/Elite Dangerous/Options/Bindings"
+            setOption('BindingsPath', path_bindings)
+        else:
+            raise FileNotFoundError("Bindings path not found, define it in configs")
     list_of_bindings = [join(path_bindings, f) for f in listdir(path_bindings) if
                         (isfile(join(path_bindings, f)) and join(path_bindings, f).endswith("binds"))]
     if not list_of_bindings:
@@ -385,7 +397,7 @@ def clear_input(to_clear=None, cv_testing=False):
 
 # Get screen
 def get_screen(x_left, y_top, x_right, y_bot):
-    screen = np.array(ImageGrab.grab(bbox=(x_left, y_top, x_right, y_bot)))
+    screen = np.array(ImageGrab.grab(bbox=(round(x_left), round(y_top), round(x_right), round(y_bot))))
     screen = cv2.cvtColor(screen, cv2.COLOR_RGB2BGR)
     return screen
 
@@ -582,8 +594,8 @@ def filter_blue(image=None, testing=False):
 
 # Get sun
 def sun_percent():
-    screen = get_screen((1 / 3) * SCREEN_WIDTH, (1 / 3) * SCREEN_HEIGHT, (2 / 3) * SCREEN_WIDTH,
-                        (2 / 3) * SCREEN_HEIGHT)
+    screen = get_screen((1 / 3) * SCREEN_WIDTH, (1 / 3) * SCREEN_HEIGHT,
+                        (2 / 3) * SCREEN_WIDTH, (2 / 3) * SCREEN_HEIGHT)
     filtered = filter_sun(screen)
     white = np.sum(filtered == 255)
     black = np.sum(filtered != 255)
@@ -592,7 +604,7 @@ def sun_percent():
 
 
 # Get compass image
-def get_compass_image(testing=True):
+def get_compass_image(testing=False):
     if SCREEN_WIDTH == 3840:
         compass_template = cv2.imread(resource_path("templates/compass_3840.png"), cv2.IMREAD_GRAYSCALE)
     elif SCREEN_WIDTH == 2560:
@@ -621,7 +633,7 @@ def get_compass_image(testing=True):
         for p in pts:
             cv2.circle(match, p, 1, (0, 0, 255), 1)
         cv2.circle(match, pt, 5, (0, 255, 0), 3)
-        cv2.imshow('Compass Found', screen)
+        cv2.imshow('Compass Found', screen)  # This crashes linux machines
         # cv2.imshow('Compass Mask', equalized)
         cv2.imshow('Compass Match', match)
         cv2.waitKey(1)
@@ -633,7 +645,7 @@ same_last_count = 0
 last_last = {'x': 1, 'y': 100}
 
 
-def get_navpoint_offset(testing=True, last=None):
+def get_navpoint_offset(testing=False, last=None):
     global same_last_count, last_last
     if SCREEN_WIDTH == 3840:
         navpoint_template = cv2.imread(resource_path("templates/navpoint_3840.png"), cv2.IMREAD_GRAYSCALE)
@@ -842,8 +854,8 @@ def align():
     hold_pitch = 0.350
     hold_roll = 0.170
     ang = x_angle(off)
-    while (off['x'] > close and ang > close_a) or (off['x'] < -close and ang < -close_a) or (off['y'] > close) or (
-            off['y'] < -close):
+    while (off['x'] > close and ang > close_a) or (off['x'] < -close and ang < -close_a) or \
+            (off['y'] > close) or (off['y'] < -close):
 
         while (off['x'] > close and ang > close_a) or (off['x'] < -close and ang < -close_a):
 
