@@ -20,7 +20,7 @@ def getKeyForBtn(btn):
     key = keyboard.read_key()
     if key != "esc":
         btn['text'] = key
-        from dev_autopilot import logger
+        from logger import logger
         logger.debug("(settings_menu) detected key '{}' with scancode {}".format(key, keyboard.key_to_scan_codes(key)))
 
 
