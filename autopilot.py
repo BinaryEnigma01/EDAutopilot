@@ -4,8 +4,6 @@ from tkinter import messagebox
 
 import requests
 
-from dev_autopilot import resource_path, RELEASE
-from dev_tray import tray
 
 
 def update():
@@ -16,6 +14,7 @@ def update():
     data = response.json()
     try:
         latest_release = data[0]['tag_name']
+        from dev_autopilot import resource_path, RELEASE
         if latest_release and latest_release != RELEASE:
             message = "There is a new version of EDAutopilot available!\n" \
                       "Would you like to go to the release download page?"
@@ -33,4 +32,5 @@ def update():
 
 if __name__ == '__main__':
     if not update():
+        from dev_tray import tray
         tray()
