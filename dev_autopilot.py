@@ -930,7 +930,7 @@ def jump():
 
 
 # Refuel
-def refuel(refuel_threshold=int(getOption('RefuelThreshold'))):
+def refuel(refuel_threshold=50):
     logger.debug('refuel')
     scoopable_stars = ['F', 'O', 'G', 'K', 'B', 'A', 'M']
     if ship()['status'] != 'in_supercruise':
@@ -1033,7 +1033,7 @@ def autopilot():
             jump()
 
             logger.info('---- AUTOPILOT REFUEL ' + 178 * '-')
-            refueled = refuel()
+            refueled = refuel(int(getOption('RefuelThreshold')))
             if refueled:
                 position(refueled_multiplier=4)
             else:
