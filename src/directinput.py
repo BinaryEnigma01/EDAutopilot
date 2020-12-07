@@ -103,6 +103,7 @@ EDKeyCodes = {
     'Key_PageUp': 0xD1+1024,  # KEY_PAGE_DOWN
     'Key_RightArrow': 0xCD+1024,  # KEY_RIGHT
     'Key_UpArrow': 0xC8+1024  # KEY_UP
+
 }
 
 # Actual Functions

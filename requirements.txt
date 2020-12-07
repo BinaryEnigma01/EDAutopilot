@@ -6,7 +6,6 @@ PyAutoGUI==0.9.42
 kthread==0.2.2
 keyboard==0.13.3
 Pillow==7.1.1
-
 future~=0.18.2
 opencv-python~=4.2.0.34
 pyscreenshot~=2.2

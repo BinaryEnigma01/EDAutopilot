@@ -265,6 +265,7 @@ keys_to_obtain = [
 
 
 def get_bindings(keysToObtain=None):
+
     """Returns a dict struct with the direct input equivalent of the necessary elite keybindings"""
     if keysToObtain is None:
         keysToObtain = keys_to_obtain
