@@ -1,79 +1,99 @@
-from pystray import Icon, MenuItem, Menu
-from PIL import Image # big
-from dev_autopilot import autopilot, resource_path, get_bindings, clear_input, set_scanner, RELEASE
-from src.directinput import *
-import threading
-import kthread
 import keyboard
+import kthread
+from PIL import Image
+from pystray import Icon, MenuItem, Menu
 
-STATE = 0
+from settings_api import getOption, setOption
+
+
+tray_icon = None
+main_thread = None
+startKey = None
+endKey = None
+
 
 def setup(icon):
     icon.visible = True
 
+
 def exit_action():
     stop_action()
-    icon.visible = False
-    icon.stop()
+    from settings_menu import force_close_settings
+    force_close_settings()
+    if tray_icon:
+        tray_icon.visible = False
+        tray_icon.stop()
+
+
 
 def start_action():
+    global main_thread
     stop_action()
-    kthread.KThread(target = autopilot, name = "EDAutopilot").start()
+    from dev_autopilot import autopilot
+    main_thread = kthread.KThread(target=autopilot, name="EDAutopilot")
+    main_thread.start()
+
 
 def stop_action():
-    for thread in threading.enumerate():
-        if thread.getName() == 'EDAutopilot':
-            thread.kill()
+    global main_thread
+    if main_thread and main_thread.is_alive():
+        main_thread.kill()
+    from dev_autopilot import get_bindings, clear_input
     clear_input(get_bindings())
 
-def set_state(v):
+
+def toggleFSS():
     def inner(icon, item):
-        global STATE
-        STATE = v
-        set_scanner(STATE)
+        setOption('AutoFSS', not getOption('AutoFSS'))
+
     return inner
 
-def get_state(v):
+
+def getFSS():
     def inner(item):
-        return STATE == v
+        return getOption('AutoFSS')
+
     return inner
+
+
+def updateSettings(key):
+    if key == 'StartKey':
+        global startKey
+        keyboard.remove_hotkey(startKey)
+        startKey = keyboard.add_hotkey(getOption('StartKey'), start_action)
+    elif key == 'EndKey':
+        global endKey
+        keyboard.remove_hotkey(endKey)
+        endKey = keyboard.add_hotkey(getOption('EndKey'), stop_action)
+    elif (tray_icon is not None) and (key == 'AutoFSS'):
+        tray_icon.update_menu()
+
+
 
 def tray():
-    global icon, thread
-    icon = None
-    thread = None
+    global tray_icon
+    tray_icon = None
 
     name = 'ED - Autopilot'
-    icon = Icon(name=name, title=name)
+    tray_icon = Icon(name=name, title=name)
+    from dev_autopilot import resource_path
     logo = Image.open(resource_path('src/logo.png'))
-    icon.icon = logo
-
-    icon.menu = Menu(
-        MenuItem(
-            'Scan Off',
-            set_state(0),
-            checked=get_state(0),
-            radio=True
-        ),
-        MenuItem(
-            'Scan on Primary Fire',
-            set_state(1),
-            checked=get_state(1),
-            radio=True
-        ),
-        MenuItem(
-            'Scan on Secondary Fire',
-            set_state(2),
-            checked=get_state(2),
-            radio=True
-        ),
-        MenuItem('Exit', lambda : exit_action())
+    tray_icon.icon = logo
+    from settings_menu import open_settings
+    tray_icon.menu = Menu(
+        MenuItem('Start', lambda: start_action()),
+        MenuItem('Stop', lambda: stop_action()),
+        MenuItem('Auto-FSS', toggleFSS(), checked=getFSS()),
+        MenuItem('Settings', lambda: open_settings()),
+        MenuItem('Exit', lambda: exit_action())
     )
 
-    keyboard.add_hotkey('home', start_action)
-    keyboard.add_hotkey('end', stop_action)
+    global startKey, endKey
+    startKey = keyboard.add_hotkey(getOption('StartKey'), start_action)
+    endKey = keyboard.add_hotkey(getOption('EndKey'), stop_action)
 
-    icon.run(setup)
+    tray_icon.run(setup)
+
 
 if __name__ == '__main__':
     tray()

@@ -35,6 +35,7 @@ the left or the right slot, and this program will automatically fetch your most 
     * Toggle Frameshift Drive
   * In 'Mode Switches':
     * UI Focus
+    * Enter FSS Mode
   * In 'Interface Mode':
     * UI Panel Up
     * UI Panel Down
@@ -45,6 +46,9 @@ the left or the right slot, and this program will automatically fetch your most 
     * Next Panel Tab
   * In 'Headlook Mode':
     * Reset Headlook
+  * In 'Full Spectrum System Scanner':
+    * Discovery Scan
+    * Leave FSS
 
 ## Optimal Game Settings:
 1. Game resolution:      1080p Borderless
@@ -62,7 +66,7 @@ Or if you'd like to set it up and run the script directly...
 _Requires **python 3** and **git**_
 1. Clone this repository
 ```sh
-> git clone https://github.com/skai2/EDAutopilot.git
+> git clone https://github.com/BinaryEnigma01/EDAutopilot.git
 ```
 2. Install requirements
 ```sh
@@ -91,9 +95,10 @@ Use at YOUR OWN RISK.
 
 ## CONTACT:
 
+
 # Email
 
-skai2mail@gmail.com
+binary.enigma@hotmail.com
 
 # Discord
 
