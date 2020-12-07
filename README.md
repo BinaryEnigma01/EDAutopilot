@@ -64,7 +64,7 @@ Or if you'd like to set it up and run the script directly...
 _Requires **python 3** and **git**_
 1. Clone this repository
 ```sh
-> git clone https://github.com/TomW1605/EDAutopilot.git
+> git clone https://github.com/BinaryEnigma01/EDAutopilot.git
 ```
 2. Install requirements
 ```sh
@@ -93,4 +93,4 @@ Use at YOUR OWN RISK.
 
 ## CONTACT:
 
-skai2mail@gmail.com
+binary.enigma@hotmail.com
