@@ -52,7 +52,6 @@ def resource_path(relative_path):
     return join(base_path, relative_path)
 
 
-
 # logger.info('\n'+200*'-'+'\n'+'---- AUTOPILOT DATA '+180*'-'+'\n'+200*'-')
 logger.info('---- AUTOPILOT DATA ' + 180 * '-')
 
@@ -556,7 +555,9 @@ def filter_blue(image=None, testing=False):
         else:
             hsv = image.copy()
         # converting from BGR to HSV color space
-        hsv = cv2. cvtColor(hsv, cv2.COLOR_BGR2HSV)
+        if not hsv:
+            return filter_blue(image, testing)
+        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
         # filter Elite UI orange
         filtered = cv2.inRange(hsv, np.array([0, 0, 200]), np.array([180, 100, 255]))
         if testing:
@@ -600,7 +601,7 @@ def get_compass_image(testing=False):
     if max_val >= threshold:
         pt = max_loc
     compass_image = screen[pt[1] - doubt: pt[1] + compass_height + doubt,
-                           pt[0] - doubt: pt[0] + compass_width + doubt].copy()
+                    pt[0] - doubt: pt[0] + compass_width + doubt].copy()
     if testing:
         cv2.rectangle(screen, (pt[0] - doubt, pt[1] - doubt),
                       (pt[0] + (compass_width + doubt), pt[1] + (compass_height + doubt)), (0, 0, 255), 2)
@@ -862,7 +863,7 @@ def align():
 
     logger.info('Alignment Step: Fine align')
     sleep(0.5)
-    close = 50
+    close = 25
     hold_pitch = 0.200
     hold_yaw = 0.400
     for i in range(5):
@@ -958,13 +959,11 @@ def refuel(refuel_threshold=50):
         return False
 
 
-
 def scanFSS(aFFS):
-
     align()
     if aFFS:
-        send(keys['SetSpeed100'])   # The farther away we are, the easier the system is to scan
-        sleep(15)                   # and there's far less chance of obstructed frequencies
+        send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
+        sleep(15)  # and there's far less chance of obstructed frequencies
     logger.info("Discovery scanning")
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
