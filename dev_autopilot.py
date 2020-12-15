@@ -556,9 +556,10 @@ def filter_blue(image=None, testing=False):
                              (2 / 3) * SCREEN_HEIGHT)
         else:
             hsv = image.copy()
-            
-        if not hsv:
-            return filter_blue(image, testing)
+          
+#         TODO: Get this to work
+#         if not hsv:
+#             return filter_blue(image, testing)
         # converting from BGR to HSV color space
         hsv = cv2. cvtColor(hsv, cv2.COLOR_BGR2HSV)
         # filter Elite UI orange
