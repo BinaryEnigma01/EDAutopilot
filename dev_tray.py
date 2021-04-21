@@ -5,7 +5,6 @@ from pystray import Icon, MenuItem, Menu
 
 from settings_api import getOption, setOption
 
-
 tray_icon = None
 main_thread = None
 startKey = None

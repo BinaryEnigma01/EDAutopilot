@@ -20,11 +20,13 @@ The program will create an icon on the taskbar.
 3. Press **End** key to abort autopilot.
 
 ## Necessary Setup:
-In game, you must have configured keyboard keys for all of the following. You may configure them in either
-the left or the right slot, and this program will automatically fetch your most recent changes.
-  * In 'Mouse Control':
+
+In game, you must have configured keyboard keys for all of the following. You may configure them in either the left or
+the right slot, and this program will automatically fetch your most recent changes.
+
+* In 'Mouse Control':
     * Reset Mouse
-  * In 'Flight Rotation':
+* In 'Flight Rotation':
     * Yaw Left
     * Yaw Right
     * Roll Left
@@ -108,7 +110,6 @@ Absolutely DO NOT LEAVE UNSUPERVISED.
 Use at YOUR OWN RISK.
 
 ## CONTACT:
-
 
 # Email
 

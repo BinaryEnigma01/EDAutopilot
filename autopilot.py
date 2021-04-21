@@ -5,7 +5,6 @@ from tkinter import messagebox
 import requests
 
 
-
 def update():
     releases_url = 'https://api.github.com/repos/BinaryEnigma01/EDAutopilot/releases'
     response = requests.get(releases_url)
@@ -33,4 +32,5 @@ def update():
 if __name__ == '__main__':
     if not update():
         from dev_tray import tray
+
         tray()

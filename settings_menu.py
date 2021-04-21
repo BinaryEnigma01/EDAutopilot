@@ -3,8 +3,8 @@ from tkinter import Tk, Checkbutton, BooleanVar, Button, NORMAL, DISABLED, Label
 from tkinter.messagebox import askyesnocancel, YES
 
 import keyboard
-from logger import logger
 
+from logger import logger
 from settings_api import getOptions, setOption
 
 #

@@ -30,13 +30,13 @@ from os.path import join, isfile, getmtime, abspath
 from time import sleep
 from xml.etree.ElementTree import parse
 
-from logger import logger
 import cv2  # see reference 2
 import numpy as np
 # from PIL import ImageGrab
 import pyscreenshot as ImageGrab
 from pyautogui import size  # see reference 6
 
+from logger import logger
 from settings_api import getOption
 from src.directinput import EDKeyCodes, PressKey, ReleaseKey  # see reference 5
 
@@ -50,7 +50,6 @@ def resource_path(relative_path):
         base_path = abspath(".")
 
     return join(base_path, relative_path)
-
 
 
 # logger.info('\n'+200*'-'+'\n'+'---- AUTOPILOT DATA '+180*'-'+'\n'+200*'-')
@@ -963,7 +962,6 @@ def refuel(refuel_threshold=50):
 
 
 def scanFSS(aFFS):
-
     align()
     if aFFS and not ship()['sys_fully_scanned']:
         send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
