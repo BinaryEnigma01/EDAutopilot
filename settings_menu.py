@@ -6,7 +6,6 @@ import keyboard
 
 from settings_api import getOptions, setOption
 
-
 #
 # Simple settings menu
 # Makes use of the settings file interface
@@ -92,10 +91,8 @@ def create_window():
     rtLbl = Label(window, text='Refuel threshold percentage:')
     rtLbl.place(relx=0.02, rely=0.43)
 
-
     def callback(strnum):
         return ((str.isdigit(strnum)) and (len(strnum) <= 3) and (0 <= int(strnum) <= 100)) or strnum == ""
-
 
     vcmd = (window.register(callback))
 
@@ -103,18 +100,15 @@ def create_window():
     refuelThreshold.insert(0, defaults['RefuelThreshold'])
     refuelThreshold.place(relx=0.62, rely=0.44)
 
-
     def get_refuel_threshold(entry):
         if not entry:
             return defaults['RefuelThreshold']
         return str(int(entry.get()))  # Just to be triply sure it's an int in str form
 
-
     def unsaved():
         return str(fssState.get()) != defaults['AutoFSS'] or str(dsState.get()) != defaults['DiscoveryScan'] or \
                startKeyBtn['text'] != defaults['StartKey'] or endKeyBtn['text'] != defaults['EndKey'] or \
                get_refuel_threshold(refuelThreshold) != defaults['RefuelThreshold']
-
 
     def on_save():
         if not unsaved():
@@ -147,3 +141,7 @@ def force_close_settings():
     if curr_window is not None:
         curr_window.destroy()
         curr_window = None
+
+
+if __name__ == '__main__':
+    open_settings()

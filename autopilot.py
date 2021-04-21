@@ -9,7 +9,7 @@ from dev_tray import tray
 
 
 def update():
-    releases_url = 'https://api.github.com/repos/skai2/EDAutopilot/releases'
+    releases_url = 'https://api.github.com/repos/BinaryEnigma01/EDAutopilot/releases'
     response = requests.get(releases_url)
     # Raise an exception if the API call fails.
     response.raise_for_status()

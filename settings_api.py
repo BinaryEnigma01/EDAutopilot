@@ -1,6 +1,5 @@
 import os.path
 
-
 #
 # Simple settings file interface, assumes the file is always generated
 # by this interface and thus has correct syntax.

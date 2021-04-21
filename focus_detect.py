@@ -34,7 +34,6 @@ def callback(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, dwmsE
         print("ED is the active window")  # TODO: Pause autopilot when this is not the case
 
 
-
 WinEventProc = WinEventProcType(callback)
 
 user32.SetWinEventHook.restype = ctypes.wintypes.HANDLE

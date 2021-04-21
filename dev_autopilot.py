@@ -78,11 +78,11 @@ logger.warning('This is a WARNING message. This information is usually used for 
 logger.error('This is an ERROR message. This information is usually used for errors and should not happen')
 logger.critical('This is a CRITICAL message. '
                 'This information is usually used for critical error, and will usually result in an exception.')
-# logging.info('\n'+200*'-'+'\n'+'---- AUTOPILOT DATA '+180*'-'+'\n'+200*'-')
+
 logging.info('---- AUTOPILOT DATA ' + 180 * '-')
 
 # Constants
-RELEASE = 'v19.05.15-alpha-18'
+RELEASE = 'v19.05.15-binary-18'
 PATH_LOG_FILES = None
 PATH_KEYBINDINGS = None
 KEY_MOD_DELAY = 0.010
@@ -278,8 +278,6 @@ keys_to_obtain = [
     'UI_Back',
     'CycleNextPanel',
     'HeadLookReset',
-    'PrimaryFire',
-    'SecondaryFire',
     'MouseReset',
     'ExplorationFSSEnter',
     'ExplorationFSSQuit',
@@ -383,7 +381,6 @@ def send(key_to_send, hold=None, repeat=1, repeat_delay=None, state=None, cv_tes
 # Clear input
 def clear_input(to_clear=None, cv_testing=False):
     if not cv_testing:
-        # logging.info('\n'+200*'-'+'\n'+'---- CLEAR INPUT '+183*'-'+'\n'+200*'-')
         logging.info('---- CLEAR INPUT ' + 183 * '-')
         send(to_clear['SetSpeedZero'])
         send(to_clear['MouseReset'])
@@ -579,7 +576,8 @@ def filter_blue(image=None, testing=False):
         else:
             hsv = image.copy()
         # converting from BGR to HSV color space
-        hsv = cv2. cvtColor(hsv, cv2.COLOR_BGR2HSV)
+
+        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
         # filter Elite UI orange
         filtered = cv2.inRange(hsv, np.array([0, 0, 200]), np.array([180, 100, 255]))
         if testing:
@@ -623,7 +621,7 @@ def get_compass_image(testing=False):
     if max_val >= threshold:
         pt = max_loc
     compass_image = screen[pt[1] - doubt: pt[1] + compass_height + doubt,
-                           pt[0] - doubt: pt[0] + compass_width + doubt].copy()
+                    pt[0] - doubt: pt[0] + compass_width + doubt].copy()
     if testing:
         cv2.rectangle(screen, (pt[0] - doubt, pt[1] - doubt),
                       (pt[0] + (compass_width + doubt), pt[1] + (compass_height + doubt)), (0, 0, 255), 2)
@@ -655,6 +653,12 @@ def get_navpoint_offset(testing=False, last=None):
         navpoint_template = cv2.imread(resource_path("templates/navpoint_1920.png"), cv2.IMREAD_GRAYSCALE)
     navpoint_width, navpoint_height = navpoint_template.shape[::-1]
     compass_image, compass_width, compass_height = get_compass_image()
+    attempts = 0
+    while compass_image.size == 0 and attempts < 10:
+        compass_image, compass_width, compass_height = get_compass_image()
+        attempts += 1
+    if attempts > 1:
+        logging.debug("Attempts at get_compass_image: " + str(attempts))
     filtered = filter_blue(compass_image)
     # filtered = filter_bright(compass_image)
     match = cv2.matchTemplate(filtered, navpoint_template, cv2.TM_CCOEFF_NORMED)
@@ -981,13 +985,11 @@ def refuel(refuel_threshold=int(getOption('RefuelThreshold'))):
         return False
 
 
-
 def scanFSS(aFFS):
-
     align()
-    if aFFS:
-        send(keys['SetSpeed100'])   # The farther away we are, the easier the system is to scan
-        sleep(15)                   # and there's far less chance of obstructed frequencies
+    if aFFS and not ship()['sys_fully_scanned']:
+        send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
+        sleep(15)  # and there's far less chance of obstructed frequencies
     logging.info("Discovery scanning")
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])

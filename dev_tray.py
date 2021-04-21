@@ -1,3 +1,5 @@
+import logging
+
 import keyboard
 import kthread
 from PIL import Image
@@ -25,7 +27,6 @@ def exit_action():
         tray_icon.stop()
 
 
-
 def start_action():
     global main_thread
     stop_action()
@@ -34,9 +35,12 @@ def start_action():
 
 
 def stop_action():
+    logging.info("Stopping autopilot thread")
     global main_thread
-    if main_thread and main_thread.is_alive():
-        main_thread.kill()
+    main_thread.isAlive = main_thread.is_alive  # KThread seems to have a bug where it uses isAlive()
+    # (A method which does not exist) inside their own code
+    if main_thread and main_thread.isAlive():
+        main_thread.terminate()
     clear_input(get_bindings())
 
 
@@ -67,7 +71,6 @@ def updateSettings(key):
         tray_icon.update_menu()
 
 
-
 def tray():
     global tray_icon
     tray_icon = None
@@ -87,6 +90,7 @@ def tray():
 
     global startKey, endKey
     startKey = keyboard.add_hotkey(getOption('StartKey'), start_action)
+    # For some reason, if PyCharm is running as root, stop_action will not be triggered
     endKey = keyboard.add_hotkey(getOption('EndKey'), stop_action)
 
     tray_icon.run(setup)

@@ -5,7 +5,6 @@
 
 import keyboard
 
-
 EDKeyCodes = {
     'Key_0': 0x0B,  # KEY_0
     'Key_1': 0x02,  # KEY_1
@@ -55,27 +54,31 @@ EDKeyCodes = {
     'Key_Numpad_9': 0x49,  # KEY_NUMPAD_9
     'Key_Numpad_Add': 0x4E,  # KEY_NUMPAD_PLUS
     'Key_Numpad_Decimal': 0x53,  # KEY_NUMPAD_DECIMAL
-    'Key_Numpad_Divide': 0xB5+1024,  # KEY_NUMPAD_DIVIDE
-    'Key_Numpad_Enter': 0x9C+1024,  # KEY_NUMPAD_ENTER
+    'Key_Numpad_Divide': 0xB5 + 1024,  # KEY_NUMPAD_DIVIDE
+    'Key_Numpad_Enter': 0x9C + 1024,  # KEY_NUMPAD_ENTER
     'Key_Numpad_Multiply': 0x37,  # KEY_NUMPAD_MULTIPLY
     'Key_Numpad_Subtract': 0x4A,  # KEY_NUMPAD_SUBTRACT
     'Key_LeftAlt': 0x38,  # KEY_LEFT_ALT
     'Key_LeftControl': 0x1D,  # KEY_LEFT_CTRL
     'Key_LeftShift': 0x2A,  # KEY_LEFT_SHIFT
-    'Key_RightAlt': 0xB8+1024,  # KEY_RIGHT_ALT
-    'Key_RightControl': 0x9D+1024,  # KEY_RIGHT_CTRL
+    'Key_RightAlt': 0xB8 + 1024,  # KEY_RIGHT_ALT
+    'Key_RightControl': 0x9D + 1024,  # KEY_RIGHT_CTRL
     'Key_RightShift': 0x36,  # KEY_RIGHT_SHIFT
+    'Key_º': 0x28,  # Key with º and ª on PT keyboard
     'Key_Apostrophe': 0x28,  # KEY_APOSTROPHE
     'Key_Hash': 0x2B,  # /shrug
     'Key_BackSlash': 0x2B,  # KEY_BACKSLASH
     'Key_Comma': 0x33,  # KEY_COMMA
     'Key_Enter': 0x1C,  # KEY_ENTER
+    'Key_«': 0x0D,  # Key with « and » on PT keyboard
     'Key_Equals': 0x0D,  # KEY_EQUALS
     'Key_Grave': 0x29,  # KEY_BACKTICK
+    'Key_Plus': 0x1A,  # Key with + and * on PT keyboard
     'Key_LeftBracket': 0x1A,  # KEY_LEFT_BRACKET
     'Key_Minus': 0x0C,  # KEY_DASH
     'Key_Period': 0x34,  # KEY_PERIOD
     'Key_RightBracket': 0x1B,  # KEY_RIGHT_BRACKET
+    'Key_ç': 0x27,  # Key with ç on PT keyboard
     'Key_SemiColon': 0x27,  # KEY_SEMICOLON
     'Key_Slash': 0x35,  # KEY_SLASH
     'Key_Space': 0x39,  # KEY_SPACE
@@ -93,18 +96,20 @@ EDKeyCodes = {
     'Key_F11': 0x57,  # KEY_F11
     'Key_F12': 0x58,  # KEY_F12
     'Key_Backspace': 0x0E,  # KEY_BACKSPACE
-    'Key_Delete': 0xD3+1024,  # KEY_DELETE
-    'Key_DownArrow': 0xD0+1024,  # KEY_DOWN
-    'Key_End': 0xCF+1024,  # KEY_END
-    'Key_Home': 0xC7+1024,  # KEY_HOME
-    'Key_Insert': 0xD2+1024,  # KEY_INSERT
-    'Key_LeftArrow': 0xCB+1024,  # KEY_LEFT
-    'Key_PageDown': 0xC9+1024,  # KEY_PAGE_UP
-    'Key_PageUp': 0xD1+1024,  # KEY_PAGE_DOWN
-    'Key_RightArrow': 0xCD+1024,  # KEY_RIGHT
-    'Key_UpArrow': 0xC8+1024  # KEY_UP
+    'Key_Delete': 0xD3 + 1024,  # KEY_DELETE
+    'Key_DownArrow': 0xD0 + 1024,  # KEY_DOWN
+    'Key_End': 0xCF + 1024,  # KEY_END
+    'Key_Home': 0xC7 + 1024,  # KEY_HOME
+    'Key_Insert': 0xD2 + 1024,  # KEY_INSERT
+    'Key_LeftArrow': 0xCB + 1024,  # KEY_LEFT
+    'Key_PageDown': 0xC9 + 1024,  # KEY_PAGE_UP
+    'Key_PageUp': 0xD1 + 1024,  # KEY_PAGE_DOWN
+    'Key_RightArrow': 0xCD + 1024,  # KEY_RIGHT
+    'Key_UpArrow': 0xC8 + 1024  # KEY_UP
 }
 
+
+# Key_Plus
 # Actual Functions
 
 
