@@ -634,7 +634,7 @@ def get_navpoint_offset(testing=False, last=None):
         compass_image, compass_width, compass_height = get_compass_image()
         attempts += 1
     if attempts > 1:
-        logging.debug("Attempts at get_compass_image: " + str(attempts))
+        logger.debug("Attempts at get_compass_image: " + str(attempts))
     filtered = filter_blue(compass_image)
     # filtered = filter_bright(compass_image)
     match = cv2.matchTemplate(filtered, navpoint_template, cv2.TM_CCOEFF_NORMED)

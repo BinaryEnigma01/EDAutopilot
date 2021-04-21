@@ -29,15 +29,15 @@ def start_action():
     stop_action()
     from dev_autopilot import autopilot
     main_thread = kthread.KThread(target=autopilot, name="EDAutopilot")
+    main_thread.isAlive = main_thread.is_alive  # KThread seems to have a bug where it uses isAlive()
+    # (A method which does not exist) inside their own code
     main_thread.start()
 
 
 def stop_action():
-    import logger
+    from logger import logger
     logger.info("Stopping autopilot thread")
     global main_thread
-    main_thread.isAlive = main_thread.is_alive  # KThread seems to have a bug where it uses isAlive()
-    # (A method which does not exist) inside their own code
     if main_thread and main_thread.is_alive():
         main_thread.kill()
     from dev_autopilot import get_bindings, clear_input
@@ -77,6 +77,8 @@ def tray():
 
     name = 'ED - Autopilot'
     tray_icon = Icon(name=name, title=name)
+    from logger import logger
+    logger.debug("OS + Software compatible with tray menu: " + str(tray_icon.HAS_MENU))
     from dev_autopilot import resource_path
     logo = Image.open(resource_path('src/logo.png'))
     tray_icon.icon = logo
