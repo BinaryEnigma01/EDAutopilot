@@ -20,7 +20,6 @@
 
 # Imports
 import datetime
-import logging
 import math
 import random as rand
 import sys
@@ -31,14 +30,14 @@ from os.path import join, isfile, getmtime, abspath
 from time import sleep
 from xml.etree.ElementTree import parse
 
-import colorlog
+from logger import logger
 import cv2  # see reference 2
 import numpy as np
 # from PIL import ImageGrab
 import pyscreenshot as ImageGrab
 from pyautogui import size  # see reference 6
 
-from settings_api import getOption, setOption
+from settings_api import getOption
 from src.directinput import EDKeyCodes, PressKey, ReleaseKey  # see reference 5
 
 
@@ -53,33 +52,9 @@ def resource_path(relative_path):
     return join(base_path, relative_path)
 
 
-# Logging
-logging.basicConfig(filename='autopilot.log', level=logging.DEBUG)
-logger = colorlog.getLogger()
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-handler.setFormatter(
-    colorlog.ColoredFormatter('%(log_color)s%(levelname)-8s%(reset)s %(white)s%(message)s',
-                              log_colors={
-                                  'DEBUG': 'fg_bold_cyan',
-                                  'INFO': 'fg_bold_green',
-                                  'WARNING': 'bg_bold_yellow,fg_bold_blue',
-                                  'ERROR': 'bg_bold_red,fg_bold_white',
-                                  'CRITICAL': 'bg_bold_red,fg_bold_yellow',
-                              }, secondary_log_colors={}
 
-                              ))
-logger.addHandler(handler)
-
-logger.debug('This is a DEBUG message. This information is usually used for troubleshooting')
-logger.info('This is an INFO message. This information is usually used for conveying information')
-logger.warning('This is a WARNING message. This information is usually used for warning')
-logger.error('This is an ERROR message. This information is usually used for errors and should not happen')
-logger.critical('This is a CRITICAL message. '
-                'This information is usually used for critical error, and will usually result in an exception.')
-
-logging.info('---- AUTOPILOT DATA ' + 180 * '-')
+# logger.info('\n'+200*'-'+'\n'+'---- AUTOPILOT DATA '+180*'-'+'\n'+200*'-')
+logger.info('---- AUTOPILOT DATA ' + 180 * '-')
 
 # Constants
 RELEASE = 'v19.05.15-binary-18'
@@ -91,15 +66,15 @@ KEY_REPEAT_DELAY = 0.100
 FUNCTION_DEFAULT_DELAY = 0.500
 SCREEN_WIDTH, SCREEN_HEIGHT = size()
 
-logging.info('RELEASE=' + str(RELEASE))
-logging.info('PATH_LOG_FILES=' + str(PATH_LOG_FILES))
-logging.info('PATH_KEYBINDINGS=' + str(PATH_KEYBINDINGS))
-logging.info('KEY_MOD_DELAY=' + str(KEY_MOD_DELAY))
-logging.info('KEY_DEFAULT_DELAY=' + str(KEY_DEFAULT_DELAY))
-logging.info('KEY_REPEAT_DELAY=' + str(KEY_REPEAT_DELAY))
-logging.info('FUNCTION_DEFAULT_DELAY=' + str(FUNCTION_DEFAULT_DELAY))
-logging.info('SCREEN_WIDTH=' + str(SCREEN_WIDTH))
-logging.info('SCREEN_HEIGHT=' + str(SCREEN_HEIGHT))
+logger.info('RELEASE=' + str(RELEASE))
+logger.info('PATH_LOG_FILES=' + str(PATH_LOG_FILES))
+logger.info('PATH_KEYBINDINGS=' + str(PATH_KEYBINDINGS))
+logger.info('KEY_MOD_DELAY=' + str(KEY_MOD_DELAY))
+logger.info('KEY_DEFAULT_DELAY=' + str(KEY_DEFAULT_DELAY))
+logger.info('KEY_REPEAT_DELAY=' + str(KEY_REPEAT_DELAY))
+logger.info('FUNCTION_DEFAULT_DELAY=' + str(FUNCTION_DEFAULT_DELAY))
+logger.info('SCREEN_WIDTH=' + str(SCREEN_WIDTH))
+logger.info('SCREEN_HEIGHT=' + str(SCREEN_HEIGHT))
 
 
 # Read ED logs
@@ -112,6 +87,7 @@ def get_latest_log(path_logs=None):
         user_path = environ.get('USERPROFILE')
         if user_path:
             path_logs = user_path + "/Saved Games/Frontier Developments/Elite Dangerous"
+            from settings_api import setOption
             setOption('JournalPath', path_logs)
         else:
             raise FileNotFoundError("Journal path not found, define it in configs")
@@ -123,7 +99,7 @@ def get_latest_log(path_logs=None):
     return latest_log
 
 
-logging.info('get_latest_log=' + str(get_latest_log(PATH_LOG_FILES)))
+logger.info('get_latest_log=' + str(get_latest_log(PATH_LOG_FILES)))
 
 
 # Extract ship info from log
@@ -228,12 +204,12 @@ def ship():
 
             # exceptions
             except Exception as trace:
-                logging.exception("Exception occurred: {}".format(trace))
-    #     logging.debug('ship='+str(ship))
+                logger.exception("Exception occurred: {}".format(trace))
+    #     logger.debug('ship='+str(ship))
     return ship_status
 
 
-logging.debug('ship=' + str(ship()))
+logger.debug('ship=' + str(ship()))
 
 
 # Control ED with direct input
@@ -245,6 +221,7 @@ def get_latest_keybinds(path_bindings=None):
         appdata = environ.get('LOCALAPPDATA')
         if appdata:
             path_bindings = appdata + "/Frontier Developments/Elite Dangerous/Options/Bindings"
+            from settings_api import setOption
             setOption('BindingsPath', path_bindings)
         else:
             raise FileNotFoundError("Bindings path not found, define it in configs")
@@ -256,7 +233,7 @@ def get_latest_keybinds(path_bindings=None):
     return latest_bindings
 
 
-logging.info("get_latest_keybinds=" + str(get_latest_keybinds()))
+logger.info("get_latest_keybinds=" + str(get_latest_keybinds()))
 
 # Extract necessary keys
 keys_to_obtain = [
@@ -320,7 +297,7 @@ def get_bindings(keysToObtain=None):
             if binding is not None:
                 direct_input_keys[item.tag] = binding
             # else:
-            #    logging.warning("get_bindings: "+item.tag+" = does not have a valid keyboard keybind.")
+            #    logger.warning("get_bindings: "+item.tag+" = does not have a valid keyboard keybind.")
 
     if len(list(direct_input_keys.keys())) < 1:
         return None
@@ -331,9 +308,9 @@ def get_bindings(keysToObtain=None):
 keys = get_bindings()
 for key in keys_to_obtain:
     try:
-        logging.info('get_bindings: ' + str(key) + ' = ' + str(keys[key]))
+        logger.info('get_bindings: ' + str(key) + ' = ' + str(keys[key]))
     except KeyError as e:
-        logging.warning(str("get_bindings: " + key + " = does not have a valid keyboard keybind.").upper())
+        logger.warning(str("get_bindings: " + key + " = does not have a valid keyboard keybind.").upper())
 
 
 # Direct input function
@@ -344,10 +321,10 @@ def send(key_to_send, hold=None, repeat=1, repeat_delay=None, state=None, cv_tes
         global KEY_MOD_DELAY, KEY_DEFAULT_DELAY, KEY_REPEAT_DELAY
 
         if key_to_send is None:
-            logging.warning('SEND=NONE !!!!!!!!')
+            logger.warning('SEND=NONE !!!!!!!!')
             return
 
-        logging.debug(
+        logger.debug(
             'send=key:' + str(key_to_send) + ',hold:' + str(hold) + ',repeat:' + str(repeat) + ',repeat_delay:' + str(
                 repeat_delay) + ',state:' + str(state))
         for i in range(repeat):
@@ -381,13 +358,13 @@ def send(key_to_send, hold=None, repeat=1, repeat_delay=None, state=None, cv_tes
 # Clear input
 def clear_input(to_clear=None, cv_testing=False):
     if not cv_testing:
-        logging.info('---- CLEAR INPUT ' + 183 * '-')
+        logger.info('---- CLEAR INPUT ' + 183 * '-')
         send(to_clear['SetSpeedZero'])
         send(to_clear['MouseReset'])
         for key_to_clear in to_clear.keys():
             if key_to_clear in keys:
                 send(to_clear[key_to_clear], state=0)
-        logging.debug('clear_input')
+        logger.debug('clear_input')
 
 
 # OpenCV
@@ -700,7 +677,7 @@ def get_navpoint_offset(testing=False, last=None):
             result = None
     else:
         result = {'x': final_x, 'y': final_y}
-    logging.debug('get_navpoint_offset=' + str(result))
+    logger.debug('get_navpoint_offset=' + str(result))
     return result
 
 
@@ -745,7 +722,7 @@ def get_destination_offset(testing=False):
         result = None
     else:
         result = {'x': final_x, 'y': final_y}
-    logging.debug('get_destination_offset=' + str(result))
+    logger.debug('get_destination_offset=' + str(result))
     return result
 
 
@@ -753,9 +730,9 @@ def get_destination_offset(testing=False):
 
 # Undock
 def undock():
-    logging.debug('undock')
+    logger.debug('undock')
     if ship()['status'] != "in_station":
-        logging.error('undock=err1')
+        logger.error('undock=err1')
         raise Exception('undock error 1')
     send(keys['UI_Back'], repeat=10)
     send(keys['HeadLookReset'])
@@ -763,7 +740,7 @@ def undock():
     send(keys['UI_Select'])
     sleep(1)
     if not (ship()['status'] == "starting_undock" or ship()['status'] == "in_undock"):
-        logging.error('undock=err2')
+        logger.error('undock=err2')
         raise Exception("undock error 2")
     send(keys['HeadLookReset'])
     send(keys['SetSpeedZero'], repeat=2)
@@ -771,19 +748,19 @@ def undock():
     for i in range(wait):
         sleep(1)
         if i > wait - 1:
-            logging.error('undock=err3')
+            logger.error('undock=err3')
             raise Exception('undock error 3')
         if ship()['status'] == "in_space":
             break
-    logging.debug('undock=complete')
+    logger.debug('undock=complete')
     return True
 
 
 # Dock
 def dock():
-    logging.debug('dock')
+    logger.debug('dock')
     if ship()['status'] != "in_space":
-        logging.error('dock=err1')
+        logger.error('dock=err1')
         raise Exception('dock error 1')
     tries = 3
     for i in range(tries):
@@ -800,7 +777,7 @@ def dock():
         if ship()['status'] == "starting_dock" or ship()['status'] == "in_dock":
             break
         if i > tries - 1:
-            logging.error('dock=err2')
+            logger.error('dock=err2')
             raise Exception("dock error 2")
     send(keys['UI_Back'])
     send(keys['HeadLookReset'])
@@ -809,14 +786,14 @@ def dock():
     for i in range(wait):
         sleep(1)
         if i > wait - 1:
-            logging.error('dock=err3')
+            logger.error('dock=err3')
             raise Exception('dock error 3')
         if ship()['status'] == "in_station":
             break
     send(keys['UI_Up'], hold=3)
     send(keys['UI_Down'])
     send(keys['UI_Select'])
-    logging.debug('dock=complete')
+    logger.debug('dock=complete')
     return True
 
 
@@ -832,27 +809,27 @@ def x_angle(point=None):
 
 
 def align():
-    logging.info('Starting Alignment')
+    logger.info('Starting Alignment')
     if not (ship()['status'] == 'in_supercruise' or ship()['status'] == 'in_space'):
-        logging.error('align=error: ship not in supercruise')
+        logger.error('align=error: ship not in supercruise')
         raise Exception('align error: ship not in supercruise')
 
-    logging.info('Alignment Step: Avoid sun')
+    logger.info('Alignment Step: Avoid sun')
     while sun_percent() > 5:
         send(keys['PitchUpButton'], state=1)
     send(keys['PitchUpButton'], state=0)
 
-    logging.debug('align=speed 100')
+    logger.debug('align=speed 100')
     send(keys['SetSpeed100'])
 
-    logging.info('Alignment Step: Find navpoint')
+    logger.info('Alignment Step: Find navpoint')
     off = get_navpoint_offset()
     while not off:
         send(keys['PitchUpButton'], state=1)
         off = get_navpoint_offset()
     send(keys['PitchUpButton'], state=0)
 
-    logging.info('Alignment Step: Crude align')
+    logger.info('Alignment Step: Crude align')
     close = 3
     close_a = 18
     hold_pitch = 0.350
@@ -887,7 +864,7 @@ def align():
         off = get_navpoint_offset(last=off)
         ang = x_angle(off)
 
-    logging.info('Alignment Step: Fine align')
+    logger.info('Alignment Step: Fine align')
     sleep(0.5)
     close = 50
     hold_pitch = 0.200
@@ -923,90 +900,91 @@ def align():
         if not off:
             return
 
-    logging.info('Alignment Complete')
+    logger.info('Alignment Complete')
 
 
 # Jump
 def jump():
-    logging.info('Starting Jump')
+    logger.info('Starting Jump')
     tries = 5
     for i in range(tries):
         if ship()['status'] == 'starting_hyperspace':
-            logging.info('Jump in Progress')
+            logger.info('Jump in Progress')
             while ship()['status'] != 'in_supercruise':
                 sleep(1)
-            logging.debug('jump=speed 0')
+            logger.debug('jump=speed 0')
             send(keys['SetSpeedZero'])
-            logging.info('Jump Complete')
+            logger.info('Jump Complete')
             return True
-        logging.debug('jump=try:' + str(i))
+        logger.debug('jump=try:' + str(i))
         if not (ship()['status'] == 'in_supercruise' or ship()['status'] == 'in_space'):
-            logging.error('jump_err=status:' + ship()['status'])
+            logger.error('jump_err=status:' + ship()['status'])
             raise Exception('not ready to jump')
         sleep(0.5)
         send(keys['SetSpeed100'])
-        logging.info('Charging FSD')
+        logger.info('Charging FSD')
         send(keys['HyperSuperCombination'], hold=1)
         sleep(16)
         if ship()['status'] != 'starting_hyperspace':
-            logging.info('Trajectory Misaligned. Jump Failed. Retrying Alignment')
+            logger.info('Trajectory Misaligned. Jump Failed. Retrying Alignment')
             align()
 
-    logging.error('jump=err2')
+    logger.error('jump=err2')
     raise Exception("jump failure")
 
 
 # Refuel
-def refuel(refuel_threshold=int(getOption('RefuelThreshold'))):
-    logging.debug('refuel')
+def refuel(refuel_threshold=50):
+    logger.debug('refuel')
     scoopable_stars = ['F', 'O', 'G', 'K', 'B', 'A', 'M']
     if ship()['status'] != 'in_supercruise':
-        logging.error('refuel=error: Ship not in supercruise')
+        logger.error('refuel=error: Ship not in supercruise')
         return False
 
     if ship()['fuel_percent'] < refuel_threshold and ship()['star_class'] in scoopable_stars:
-        logging.info('Starting Refuel')
+        logger.info('Starting Refuel')
         sleep(2)
         send(keys['SetSpeed100'])
         sleep(4)
-        logging.info('Refuel in Progress')
+        logger.info('Refuel in Progress')
         send(keys['SetSpeedZero'], repeat=3)
         while not ship()['fuel_percent'] == 100:
             sleep(1)
-        logging.info('Refuel Complete')
+        logger.info('Refuel Complete')
         return True
     elif ship()['fuel_percent'] >= refuel_threshold:
-        logging.info('Refuel not Needed')
+        logger.info('Refuel not Needed')
         return False
     elif ship()['star_class'] not in scoopable_stars:
-        logging.info('Refuel Needed, Unsuitable Star')
+        logger.info('Refuel Needed, Unsuitable Star')
         return False
     else:
         return False
 
 
 def scanFSS(aFFS):
+
     align()
     if aFFS and not ship()['sys_fully_scanned']:
         send(keys['SetSpeed100'])  # The farther away we are, the easier the system is to scan
         sleep(15)  # and there's far less chance of obstructed frequencies
-    logging.info("Discovery scanning")
+    logger.info("Discovery scanning")
     send(keys['SetSpeedZero'])
     send(keys['ExplorationFSSEnter'])
     sleep(1)
     send(keys['ExplorationFSSDiscoveryScan'], 3.5)
     if aFFS:
-        logging.info("Waiting for FSS to complete")
+        logger.info("Waiting for FSS to complete")
         while not ship()['sys_fully_scanned']:
             sleep(5)  # TODO: Actually scan around and such
 
     send(keys['ExplorationFSSQuit'])
-    logging.info("Scan complete")
+    logger.info("Scan complete")
 
 
 # Position
 def position(refueled_multiplier=1):
-    logging.debug('position')
+    logger.debug('position')
     send(keys['PitchUpButton'], state=1)
     sleep(5)
     send(keys['PitchUpButton'], state=0)
@@ -1017,7 +995,7 @@ def position(refueled_multiplier=1):
     sleep(5)
     send(keys['PitchUpButton'], state=0)
     sleep(5 * refueled_multiplier)
-    logging.debug('position=complete')
+    logger.debug('position=complete')
     return True
 
 
@@ -1041,30 +1019,30 @@ def position(refueled_multiplier=1):
 
 
 def autopilot():
-    # logging.info('\n'+200*'-'+'\n'+'---- AUTOPILOT START '+179*'-'+'\n'+200*'-')
-    logging.info('---- AUTOPILOT START ' + 179 * '-')
-    logging.debug('get_latest_log=' + str(get_latest_log(PATH_LOG_FILES)))
-    logging.debug('ship=' + str(ship()))
+    # logger.info('\n'+200*'-'+'\n'+'---- AUTOPILOT START '+179*'-'+'\n'+200*'-')
+    logger.info('---- AUTOPILOT START ' + 179 * '-')
+    logger.debug('get_latest_log=' + str(get_latest_log(PATH_LOG_FILES)))
+    logger.debug('ship=' + str(ship()))
     while ship()['target']:
         if ship()['status'] == 'in_space' or ship()['status'] == 'in_supercruise':
-            logging.info('---- AUTOPILOT ALIGN ' + 179 * '-')
+            logger.info('---- AUTOPILOT ALIGN ' + 179 * '-')
             align()
 
             if getOption('DiscoveryScan'):
-                logging.info('---- AUTOPILOT SCAN ' + 180 * '-')
+                logger.info('---- AUTOPILOT SCAN ' + 180 * '-')
                 scanFSS(getOption('AutoFSS'))
 
-            logging.info('---- AUTOPILOT JUMP ' + 180 * '-')
+            logger.info('---- AUTOPILOT JUMP ' + 180 * '-')
             jump()
 
-            logging.info('---- AUTOPILOT REFUEL ' + 178 * '-')
-            refueled = refuel()
+            logger.info('---- AUTOPILOT REFUEL ' + 178 * '-')
+            refueled = refuel(int(getOption('RefuelThreshold')))
             if refueled:
                 position(refueled_multiplier=4)
             else:
                 position(refueled_multiplier=1)
 
     send(keys['SetSpeedZero'])
-    logging.info('---- AUTOPILOT END ' + 181 * '-')
+    logger.info('---- AUTOPILOT END ' + 181 * '-')
     from dev_tray import stop_action
     stop_action()

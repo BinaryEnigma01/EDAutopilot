@@ -3,6 +3,7 @@ from tkinter import Tk, Checkbutton, BooleanVar, Button, NORMAL, DISABLED, Label
 from tkinter.messagebox import askyesnocancel, YES
 
 import keyboard
+from logger import logger
 
 from settings_api import getOptions, setOption
 
@@ -19,7 +20,6 @@ def getKeyForBtn(btn):
     key = keyboard.read_key()
     if key != "esc":
         btn['text'] = key
-        from dev_autopilot import logger
         logger.debug("(settings_menu) detected key '{}' with scancode {}".format(key, keyboard.key_to_scan_codes(key)))
 
 
@@ -28,10 +28,10 @@ def create_window():
     window.title("EDAutopilot Settings")
     window.geometry('280x300')
     window.resizable(False, False)
-    from dev_autopilot import logger
     logger.debug(os.name)
     if "nt" == os.name:
-        window.iconbitmap('src/logo.ico')
+        from dev_autopilot import resource_path
+        window.iconbitmap(resource_path('src/logo.ico'))
 
     defaults = getOptions()
 

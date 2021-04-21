@@ -1,13 +1,10 @@
-import logging
-
 import keyboard
 import kthread
 from PIL import Image
 from pystray import Icon, MenuItem, Menu
 
-from dev_autopilot import autopilot, resource_path, get_bindings, clear_input
 from settings_api import getOption, setOption
-from settings_menu import open_settings, force_close_settings
+
 
 tray_icon = None
 main_thread = None
@@ -21,6 +18,7 @@ def setup(icon):
 
 def exit_action():
     stop_action()
+    from settings_menu import force_close_settings
     force_close_settings()
     if tray_icon:
         tray_icon.visible = False
@@ -30,17 +28,20 @@ def exit_action():
 def start_action():
     global main_thread
     stop_action()
+    from dev_autopilot import autopilot
     main_thread = kthread.KThread(target=autopilot, name="EDAutopilot")
     main_thread.start()
 
 
 def stop_action():
-    logging.info("Stopping autopilot thread")
+    import logger
+    logger.info("Stopping autopilot thread")
     global main_thread
     main_thread.isAlive = main_thread.is_alive  # KThread seems to have a bug where it uses isAlive()
     # (A method which does not exist) inside their own code
-    if main_thread and main_thread.isAlive():
-        main_thread.terminate()
+    if main_thread and main_thread.is_alive():
+        main_thread.kill()
+    from dev_autopilot import get_bindings, clear_input
     clear_input(get_bindings())
 
 
@@ -77,9 +78,10 @@ def tray():
 
     name = 'ED - Autopilot'
     tray_icon = Icon(name=name, title=name)
+    from dev_autopilot import resource_path
     logo = Image.open(resource_path('src/logo.png'))
     tray_icon.icon = logo
-
+    from settings_menu import open_settings
     tray_icon.menu = Menu(
         MenuItem('Start', lambda: start_action()),
         MenuItem('Stop', lambda: stop_action()),

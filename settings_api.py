@@ -37,7 +37,7 @@ def _writeSettings(dictionary=None):
 
 
 def _on_change(key, val=None):
-    from dev_autopilot import logger
+    from logger import logger
     from dev_tray import updateSettings
     valStr = ""
     if val is not None:

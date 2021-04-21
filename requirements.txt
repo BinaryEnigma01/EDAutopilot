@@ -8,3 +8,4 @@ keyboard~=0.13.3
 Pillow~=8.0.0
 opencv-python~=4.5.1.48
 pyscreenshot~=3.0
+future~=0.18.2

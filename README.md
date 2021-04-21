@@ -20,11 +20,11 @@ The program will create an icon on the taskbar.
 3. Press **End** key to abort autopilot.
 
 ## Necessary Setup:
-
-In game, you must have configured keyboard keys for all of the following. You may configure them in either the left or
-the right slot, and this program will automatically fetch your most recent changes.
-
-* In 'Flight Rotation':
+In game, you must have configured keyboard keys for all of the following. You may configure them in either
+the left or the right slot, and this program will automatically fetch your most recent changes.
+  * In 'Mouse Control':
+    * Reset Mouse
+  * In 'Flight Rotation':
     * Yaw Left
     * Yaw Right
     * Roll Left
@@ -75,7 +75,7 @@ _Requires **python 3** and **git**_
 1. Clone this repository
 
 ```sh
-> git clone https://github.com/TomW1605/EDAutopilot.git
+> git clone https://github.com/BinaryEnigma01/EDAutopilot.git
 ```
 
 2. Install requirements
@@ -88,14 +88,16 @@ _Requires **python 3** and **git**_
 3. Run script
 
 ```sh
-> python autopilot.py
+`python autopilot.py`
 OR you may have to run
-> python3 autopilot.py
+`python3 autopilot.py`
 if you have both python 2 and 3 installed.
 ```
 
 If you encounter any issues during pip install, try running:
-> python -m pip install -r requirements.txt instead of > pip install -r requirements.txt
+`python -m pip install -r requirements.txt`
+
+instead of `pip install -r requirements.txt`
 
 ## WARNING:
 
@@ -107,4 +109,11 @@ Use at YOUR OWN RISK.
 
 ## CONTACT:
 
-skai2mail@gmail.com
+
+# Email
+
+binary.enigma@hotmail.com
+
+# Discord
+
+https://discord.gg/HCgkfSc
