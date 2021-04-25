@@ -116,7 +116,8 @@ def ship():
         'fuel_level': None,
         'fuel_percent': None,
         'is_scooping': False,
-        'sys_fully_scanned': False
+        'sys_fully_scanned': False,
+        'damaged': False
     }
     # Read log line by line and parse data
     with open(latest_log, encoding="utf-8") as f:
@@ -200,6 +201,9 @@ def ship():
                 elif log_event == 'FSDJump':
                     if ship_status['location'] == ship_status['target']:
                         ship_status['target'] = None
+
+                if (log_event == 'HeatDamage' or log_event == 'HullDamage') and (datetime.now()-datetime.fromtimestamp(log['timestamp'])).seconds < 10:
+                    ship_status['damaged'] = True
 
             # exceptions
             except Exception as trace:
@@ -565,6 +569,26 @@ def filter_blue(image=None, testing=False):
             break
     return filtered
 
+# Filter cyan
+def filter_cyan(image=None, testing=False):
+    while True:
+        if testing:
+            hsv = get_screen((1/3)*SCREEN_WIDTH, (1/3)*SCREEN_HEIGHT, (2/3)*SCREEN_WIDTH, (2/3)*SCREEN_HEIGHT)
+        else:
+            hsv = image.copy()
+        # converting from BGR to HSV color space
+        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
+        # filter Elite UI orange
+        filtered = cv2.inRange(hsv, np.array([83, 100, 100]), np.array([103, 255, 255]))
+        if testing:
+            cv2.imshow('Filtered', filtered)
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
+                break
+        else:
+            break
+    return filtered
+
 
 # Get sun
 def sun_percent():
@@ -693,7 +717,7 @@ def get_destination_offset(testing=False):
     height = (1 / 3) * SCREEN_HEIGHT
     screen = get_screen((1 / 3) * SCREEN_WIDTH, (1 / 3) * SCREEN_HEIGHT, (2 / 3) * SCREEN_WIDTH,
                         (2 / 3) * SCREEN_HEIGHT)
-    filtered = filter_orange2(screen)
+    filtered = filter_cyan(screen)
     match = cv2.matchTemplate(filtered, destination_template, cv2.TM_CCOEFF_NORMED)
     threshold = 0.2
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match)
@@ -1014,6 +1038,23 @@ def position(refueled_multiplier=1):
 # 'starting-docking'
 # 
 # 'in-docking'
+
+def checkDamage():
+    if getOption('SafeNet'):
+        logging.info('Ship Damage Safenet Activated!')
+        while(True):
+            if ship()['damaged'] == True:
+                logging.critical("Damage Detected, Exiting game")
+                # sendDiscordWebhook("🔥🔥🔥Damage Detected, Exiting game🔥🔥🔥", True)
+                killED()
+                return
+            sleep(5)
+
+def killED():
+    logging.critical("Tring to ternimate Elite Dangerous!!")
+    # sendDiscordWebhook("🛑Tring to ternimate Elite Dangerous!!🛑", True)
+    for i in range(10):
+        system("TASKKILL /F /IM EliteDangerous64.exe")
 
 
 def autopilot():

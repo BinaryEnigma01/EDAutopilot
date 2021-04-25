@@ -68,28 +68,33 @@ def create_window():
     fssState.set(defaults['AutoFSS'])
     fssCheck = Checkbutton(window, text='Automatic FSS Scan\n (Currently waits for user to operate FSS)',
                            var=fssState)
-    fssCheck.place(relx=0.05, rely=0.09)
+    fssCheck.place(relx=0.02, rely=0.09)
+
+    safeNetState = BooleanVar()
+    safeNetState.set(defaults['SafeNet'])
+    safeNetCheck = Checkbutton(window, text='Ship Safe Net', var=safeNetState)
+    safeNetCheck.place(relx=0.02, rely=0.22)
 
     startKeyLbl = Label(window, text='Start EDAutopilot Key:')
-    startKeyLbl.place(relx=0.02, rely=0.23)
+    startKeyLbl.place(relx=0.02, rely=0.32)
 
     def on_startKey():
         getKeyForBtn(startKeyBtn)
 
     startKeyBtn = Button(window, text=defaults['StartKey'], command=on_startKey, width=20)
-    startKeyBtn.place(relx=0.46, rely=0.22)
+    startKeyBtn.place(relx=0.46, rely=0.31)
 
     startKeyLbl = Label(window, text='End EDAutopilot Key:')
-    startKeyLbl.place(relx=0.02, rely=0.33)
+    startKeyLbl.place(relx=0.02, rely=0.42)
 
     def on_endKey():
         getKeyForBtn(endKeyBtn)
 
     endKeyBtn = Button(window, text=defaults['EndKey'], command=on_endKey, width=20)
-    endKeyBtn.place(relx=0.46, rely=0.32)
+    endKeyBtn.place(relx=0.46, rely=0.41)
 
     rtLbl = Label(window, text='Refuel threshold percentage:')
-    rtLbl.place(relx=0.02, rely=0.43)
+    rtLbl.place(relx=0.02, rely=0.52)
 
     def callback(strnum):
         return ((str.isdigit(strnum)) and (len(strnum) <= 3) and (0 <= int(strnum) <= 100)) or strnum == ""
@@ -98,7 +103,7 @@ def create_window():
 
     refuelThreshold = Entry(window, validate='all', validatecommand=(vcmd, '%P'), width=10, justify='center')
     refuelThreshold.insert(0, defaults['RefuelThreshold'])
-    refuelThreshold.place(relx=0.62, rely=0.44)
+    refuelThreshold.place(relx=0.62, rely=0.53)
 
     def get_refuel_threshold(entry):
         if not entry:
@@ -117,6 +122,8 @@ def create_window():
             setOption('AutoFSS', fssState.get())
         if str(dsState.get()) != defaults['DiscoveryScan']:
             setOption('DiscoveryScan', dsState.get())
+        if str(safeNetState.get()) != defaults['SafeNet']:
+            setOption('SafeNet', safeNetState.get())
         if startKeyBtn['text'] != defaults['StartKey']:
             setOption('StartKey', startKeyBtn['text'])
         if endKeyBtn['text'] != defaults['EndKey']:

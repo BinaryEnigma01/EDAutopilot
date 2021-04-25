@@ -9,8 +9,14 @@ import os.path
 #
 
 # Default settings
-settings = dict(AutoFSS=False, DiscoveryScan=True, StartKey='home', EndKey='end',
-                RefuelThreshold=40, JournalPath="", BindingsPath="")
+settings = dict(DiscoveryScan=True, 
+                SafeNet=False,
+                AutoFSS=False, 
+                StartKey='home', 
+                EndKey='end',
+                RefuelThreshold=40, 
+                JournalPath="", 
+                BindingsPath="")
 CFGFILE = "./EDAutopilot.cfg"
 
 
