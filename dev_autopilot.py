@@ -579,9 +579,9 @@ def sun_percent():
 
 # Get compass image
 def get_compass_image(testing=False):
-    if SCREEN_WIDTH == 3840:
+    if SCREEN_HEIGHT == 2160:
         compass_template = cv2.imread(resource_path("templates/compass_3840.png"), cv2.IMREAD_GRAYSCALE)
-    elif SCREEN_WIDTH == 2560:
+    elif SCREEN_HEIGHT == 1440:
         compass_template = cv2.imread(resource_path("templates/compass_2560.png"), cv2.IMREAD_GRAYSCALE)
     else:
         compass_template = cv2.imread(resource_path("templates/compass_1920.png"), cv2.IMREAD_GRAYSCALE)
@@ -621,9 +621,9 @@ last_last = {'x': 1, 'y': 100}
 
 def get_navpoint_offset(testing=False, last=None):
     global same_last_count, last_last
-    if SCREEN_WIDTH == 3840:
+    if SCREEN_HEIGHT == 2160:
         navpoint_template = cv2.imread(resource_path("templates/navpoint_3840.png"), cv2.IMREAD_GRAYSCALE)
-    elif SCREEN_WIDTH == 2560:
+    elif SCREEN_HEIGHT == 1440:
         navpoint_template = cv2.imread(resource_path("templates/navpoint_2560.png"), cv2.IMREAD_GRAYSCALE)
     else:
         navpoint_template = cv2.imread(resource_path("templates/navpoint_1920.png"), cv2.IMREAD_GRAYSCALE)
@@ -682,9 +682,9 @@ def get_navpoint_offset(testing=False, last=None):
 
 # Get destination offset
 def get_destination_offset(testing=False):
-    if SCREEN_WIDTH == 3840:
+    if SCREEN_HEIGHT == 2160:
         destination_template = cv2.imread(resource_path("templates/destination_3840.png"), cv2.IMREAD_GRAYSCALE)
-    elif SCREEN_WIDTH == 2560:
+    elif SCREEN_HEIGHT == 1440:
         destination_template = cv2.imread(resource_path("templates/destination_2560.png"), cv2.IMREAD_GRAYSCALE)
     else:
         destination_template = cv2.imread(resource_path("templates/destination_1920.png"), cv2.IMREAD_GRAYSCALE)
