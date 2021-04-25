@@ -32,6 +32,7 @@ def start_action():
     main_thread.isAlive = main_thread.is_alive  # KThread seems to have a bug where it uses isAlive()
     # (A method which does not exist) inside their own code
     main_thread.start()
+    safeNet_thread = kthread.KThread(target=checkDamage, name="EDSafeNet")
 
 
 def stop_action():
@@ -40,6 +41,8 @@ def stop_action():
     global main_thread
     if main_thread and main_thread.is_alive():
         main_thread.kill()
+    if safeNet_thread and safeNet_thread.is_alive():
+        safeNet_thread.kill()
     from dev_autopilot import get_bindings, clear_input
     clear_input(get_bindings())
 
