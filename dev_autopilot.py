@@ -32,8 +32,7 @@ from xml.etree.ElementTree import parse
 
 import cv2  # see reference 2
 import numpy as np
-# from PIL import ImageGrab
-import pyscreenshot as ImageGrab
+from PIL import ImageGrab
 from pyautogui import size  # see reference 6
 
 from logger import logger
